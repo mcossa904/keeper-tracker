@@ -1,0 +1,451 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Keeper eligibility</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style id="app-style">
+:root{
+  --bg:#EDF1EB; --surface:#FBFCFA; --ink:#13201A; --muted:#5B6A61; --line:#CCD6CE;
+  --turf:#1E6A44; --turf-ink:#FFFFFF; --stamp:#1E6A44; --gold:#B9820F; --gold-bg:#F6E7C2;
+  --red:#B23A26; --red-bg:#F5DCD5; --box:#E3EAE4;
+  --display:"Barlow Condensed","Roboto Condensed","Arial Narrow",sans-serif;
+  --body:"Barlow","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  color-scheme:light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0E1611; --surface:#16211A; --ink:#E6EEE8; --muted:#97A79C; --line:#2A3A30;
+    --turf:#3FA570; --turf-ink:#06140C; --stamp:#5CC28C; --gold:#E9B949; --gold-bg:#3A2E10;
+    --red:#EE7A63; --red-bg:#3D1C15; --box:#203027; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0E1611; --surface:#16211A; --ink:#E6EEE8; --muted:#97A79C; --line:#2A3A30;
+  --turf:#3FA570; --turf-ink:#06140C; --stamp:#5CC28C; --gold:#E9B949; --gold-bg:#3A2E10;
+  --red:#EE7A63; --red-bg:#3D1C15; --box:#203027; color-scheme:dark;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.45}
+.wrap{max-width:1240px;margin:0 auto;padding:28px 18px 120px}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+
+header.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px;border-bottom:3px solid var(--ink);padding-bottom:14px}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(2.4rem,7vw,4rem);line-height:.92;margin:0;letter-spacing:-.01em}
+.sub{margin:6px 0 0;color:var(--muted);font-size:1rem}
+.sub strong{color:var(--ink);font-weight:600}
+.rule{display:flex;align-items:center;gap:12px;font-family:var(--display);font-weight:600;font-size:1.05rem}
+.rule .big{font-size:2.6rem;font-weight:800;line-height:1;color:var(--turf)}
+
+.tools{display:flex;flex-wrap:wrap;gap:10px;margin:18px 0 8px}
+.tools input,.tools select{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:9px 12px;min-width:0}
+.tools input{flex:1 1 220px}
+.tools select{flex:0 1 auto}
+.btn{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:9px 14px;cursor:pointer;font-weight:600}
+.btn:hover{border-color:var(--ink)}
+.btn.primary{background:var(--turf);color:var(--turf-ink);border-color:var(--turf)}
+.btn.small{padding:3px 8px;font-size:.82rem}
+.btn.quiet{border-color:transparent;background:transparent;color:var(--muted)}
+.btn.quiet:hover{color:var(--ink);border-color:var(--line)}
+.btn.danger{color:var(--red)}
+
+.rules{margin:16px 0 4px;background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--turf);border-radius:6px;padding:10px 14px}
+.rules summary{font-family:var(--display);font-weight:700;font-size:1.2rem;cursor:pointer}
+.rules ul{margin:6px 0 2px;padding-left:20px;font-size:.92rem;line-height:1.5}
+.legend{display:flex;flex-wrap:wrap;gap:16px;color:var(--muted);font-size:.9rem;margin:6px 0 4px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+
+section.team{margin-top:20px}
+.team h2{font-family:var(--display);font-weight:700;font-size:1.35rem;margin:0 0 4px;display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px}
+.team h2 small{font-family:var(--body);font-weight:500;font-size:.9rem;color:var(--muted)}
+.rows{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+.row{display:grid;grid-template-columns:minmax(0,1.4fr) auto minmax(0,1fr);align-items:center;gap:10px;padding:5px 2px;border-bottom:1px solid var(--line)}
+.row.editing{grid-template-columns:minmax(0,1.4fr) auto minmax(0,1fr) auto}
+@media (min-width:1000px){
+  .row{grid-template-columns:minmax(560px,max-content) 110px minmax(0,1fr)}
+  .row.editing{grid-template-columns:minmax(560px,max-content) 110px minmax(0,1fr) auto}
+  .row .who{white-space:nowrap}
+}
+.pname{font-weight:600;font-size:.98rem;overflow-wrap:anywhere;background:none;border:0;padding:0;color:inherit;font-family:inherit;cursor:pointer;text-align:left;text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:3px}
+.pname:hover{text-decoration-color:var(--turf)}
+.pathwrap{padding:22px}
+.path{list-style:none;margin:14px 0 6px;padding:0 0 0 14px;border-left:3px solid var(--turf)}
+.path li{position:relative;padding:0 0 12px 10px}
+.path li::before{content:"";position:absolute;left:-21px;top:5px;width:11px;height:11px;border-radius:50%;background:var(--surface);border:3px solid var(--turf)}
+.path .pd{display:block;font-size:.8rem;color:var(--muted)}
+.path .pt{display:block;font-weight:600}
+.pos{display:inline-block;font-family:var(--display);font-weight:700;font-size:.85rem;min-width:2.4em;text-align:center;padding:1px 6px;border-radius:4px;background:var(--box);color:var(--muted);margin-right:8px;vertical-align:1px}
+.cost{display:inline;font-size:.82rem;color:var(--muted);margin-left:8px}
+.check{display:flex;gap:8px;align-items:center;margin:-4px 0 14px;font-size:.92rem}
+.cost b{font-family:var(--display);font-weight:700;font-size:.92rem;color:var(--gold)}
+
+.box .future{color:var(--muted);opacity:.75;font-weight:600}
+.boxes{display:flex;gap:4px;min-width:110px}
+.box{width:34px;height:26px;border-radius:4px;display:grid;place-items:center;font-family:var(--display);font-weight:700;font-size:.95rem;border:2px dashed var(--line);color:transparent}
+.box.used{border:2px solid var(--stamp);background:var(--stamp);color:var(--turf-ink);transform:rotate(-2deg)}
+.box.used:nth-child(even){transform:rotate(1.5deg)}
+.box.over{border-color:var(--red);background:var(--red);color:#fff}
+.box.just{animation:stamp .35s ease-out}
+@keyframes stamp{0%{transform:scale(1.5) rotate(-8deg);opacity:0}100%{opacity:1}}
+@media (prefers-reduced-motion:reduce){.box.just{animation:none}}
+
+.status{justify-self:start;font-weight:600;font-size:.82rem;padding:2px 9px;border-radius:999px;background:var(--box);white-space:nowrap}
+.status.ok{color:var(--turf)}
+.status.last{background:var(--gold-bg);color:var(--gold)}
+.status.done{background:var(--red-bg);color:var(--red)}
+.acts{display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap}
+
+.empty{margin-top:40px;padding:28px;border:2px dashed var(--line);border-radius:8px;text-align:center;color:var(--muted)}
+.empty strong{display:block;color:var(--ink);font-family:var(--display);font-size:1.5rem;margin-bottom:4px}
+
+.savebar{position:fixed;left:0;right:0;bottom:0;padding:12px 18px calc(12px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);display:flex;justify-content:center;gap:12px;align-items:center;flex-wrap:wrap;z-index:20}
+.savebar[hidden]{display:none}
+.savebar .btn{border-color:transparent}
+.savebar .btn.quiet{color:var(--bg)}
+.note{font-size:.9rem;color:var(--muted);margin-top:30px}
+.toast{position:fixed;left:50%;bottom:80px;transform:translateX(-50%);background:var(--red);color:#fff;padding:10px 16px;border-radius:6px;z-index:30;max-width:90vw}
+
+dialog{border:none;border-radius:10px;padding:0;background:var(--surface);color:var(--ink);width:min(460px,94vw);box-shadow:0 20px 60px rgba(0,0,0,.35)}
+dialog::backdrop{background:rgba(5,15,10,.55)}
+dialog form{padding:22px}
+dialog h3{font-family:var(--display);font-size:1.7rem;margin:0 0 14px}
+.field{display:block;margin-bottom:14px}
+.field span{display:block;font-weight:600;font-size:.92rem;margin-bottom:5px}
+.field em{display:block;font-style:normal;color:var(--muted);font-size:.85rem;margin-top:4px}
+.field input,.field select,.field textarea{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:9px 11px}
+.field textarea{min-height:150px;resize:vertical}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.dlg-acts{display:flex;justify-content:flex-end;gap:10px;margin-top:8px}
+.err{color:var(--red);font-size:.9rem;min-height:1.2em;margin:0 0 6px}
+
+@media (max-width:640px){
+  .row,.row.editing{grid-template-columns:1fr auto;grid-template-areas:"name name" "boxes status" "acts acts";gap:4px 10px}
+  .row .who{grid-area:name}.row .boxes{grid-area:boxes}.row .status{grid-area:status;justify-self:end}.row .acts{grid-area:acts;justify-content:flex-start}
+  .box{width:34px;height:26px}
+  .boxes{min-width:110px}
+}
+</style>
+</head>
+<body>
+<div class="wrap" id="root"><p class="sub">Loading keepers…</p></div>
+<script type="application/json" id="state">{"updated": "Oct 26, 2026", "league": "The Coalition of Couch Coaches", "season": 2026, "maxYears": 3, "teams": ["Christian", "Trey", "Alex", "Anthony", "Jordan", "Chris", "Mike", "Thomas", "Dustin", "Matt", "Frank", "Nick"], "players": [{"id": "p01", "name": "Lamar Jackson", "pos": "QB", "team": "Christian", "kept": [2024, 2025, 2026], "sid": "4881", "round": 4, "path": [{"d": "2024", "t": "Drafted by Christian in round 4"}, {"d": "2025", "t": "Kept by Christian in round 4"}, {"d": "Aug 22, 2026", "t": "Kept by Christian in round 4"}]}, {"id": "p02", "name": "Bhayshul Tuten", "pos": "RB", "team": "Christian", "kept": [2025, 2026], "round": 8, "sid": "12490", "path": [{"d": "2025", "t": "Drafted by Christian in round 8"}, {"d": "Aug 22, 2026", "t": "Kept by Christian in round 8"}]}, {"id": "p03", "name": "Omarion Hampton", "pos": "RB", "team": "Trey", "kept": [2025, 2026], "round": 2, "sid": "12507", "path": [{"d": "2025", "t": "Drafted by Trey in round 2"}, {"d": "Aug 22, 2026", "t": "Kept by Trey in round 2"}]}, {"id": "p04", "name": "Justin Herbert", "pos": "QB", "team": "Trey", "kept": [2024, 2025, 2026], "sid": "6797", "round": 14, "path": [{"d": "2024", "t": "Drafted by Trey in round 14"}, {"d": "2025", "t": "Kept by Trey in round 14"}, {"d": "Aug 22, 2026", "t": "Kept by Trey in round 14"}, {"d": "Sep 21, 2026", "t": "Dropped by Trey"}]}, {"id": "p05", "name": "Tetairoa McMillan", "pos": "WR", "team": "Alex", "kept": [2025, 2026], "round": 4, "sid": "12526", "path": [{"d": "2025", "t": "Drafted by Alex in round 4"}, {"d": "Aug 22, 2026", "t": "Kept by Alex in round 4"}]}, {"id": "p06", "name": "Trey McBride", "pos": "TE", "team": "Alex", "kept": [2024, 2025, 2026], "sid": "8130", "round": 5, "path": [{"d": "2024", "t": "Drafted by Alex in round 5"}, {"d": "2025", "t": "Kept by Alex in round 5"}, {"d": "Aug 22, 2026", "t": "Kept by Alex in round 5"}]}, {"id": "p07", "name": "Chase Brown", "pos": "RB", "team": "Chris", "kept": [2025, 2026], "round": 2, "sid": "9224", "path": [{"d": "2024", "t": "Drafted by Trey in round 9 (not kept)"}, {"d": "2025", "t": "Drafted by Anthony in round 2"}, {"d": "Aug 22, 2026", "t": "Kept by Anthony in round 2"}, {"d": "Oct 16, 2026", "t": "Traded from Anthony to Chris"}]}, {"id": "p08", "name": "Chris Olave", "pos": "WR", "team": "Mike", "kept": [2025, 2026], "round": 6, "sid": "8144", "path": [{"d": "2024", "t": "Drafted by Chris in round 2 (not kept)"}, {"d": "2025", "t": "Drafted by Anthony in round 6"}, {"d": "Aug 22, 2026", "t": "Kept by Anthony in round 6"}, {"d": "Oct 20, 2026", "t": "Traded from Anthony to Mike"}]}, {"id": "p09", "name": "George Kittle", "pos": "TE", "team": "Jordan", "kept": [2025, 2026], "round": 2, "sid": "4217", "path": [{"d": "2024", "t": "Drafted by Anthony in round 4 (not kept)"}, {"d": "2025", "t": "Drafted by Jordan in round 2"}, {"d": "Aug 22, 2026", "t": "Kept by Jordan in round 2"}]}, {"id": "p10", "name": "Emeka Egbuka", "pos": "WR", "team": "Jordan", "kept": [2025, 2026], "round": 7, "sid": "12514", "path": [{"d": "2025", "t": "Drafted by Jordan in round 7"}, {"d": "Aug 22, 2026", "t": "Kept by Jordan in round 7"}]}, {"id": "p11", "name": "Jonathan Taylor", "pos": "RB", "team": "Anthony", "kept": [2025, 2026], "round": 2, "sid": "6813", "path": [{"d": "2024", "t": "Drafted by Anthony in round 1 (not kept)"}, {"d": "2025", "t": "Drafted by Chris in round 2"}, {"d": "Aug 22, 2026", "t": "Kept by Chris in round 2"}, {"d": "Oct 16, 2026", "t": "Traded from Chris to Anthony"}]}, {"id": "p12", "name": "Drake Maye", "pos": "QB", "team": "Chris", "kept": [2025, 2026], "round": 13, "sid": "11564", "path": [{"d": "2025", "t": "Drafted by Chris in round 13"}, {"d": "Aug 22, 2026", "t": "Kept by Chris in round 13"}]}, {"id": "p13", "name": "Jaxon Smith-Njigba", "pos": "WR", "team": "Mike", "kept": [2025, 2026], "round": 2, "sid": "9488", "path": [{"d": "2024", "t": "Drafted by Jordan in round 8 (not kept)"}, {"d": "2025", "t": "Drafted by Mike in round 2"}, {"d": "Aug 22, 2026", "t": "Kept by Mike in round 2"}]}, {"id": "p14", "name": "James Cook", "pos": "RB", "team": "Mike", "kept": [2025, 2026], "round": 3, "sid": "8138", "path": [{"d": "2024", "t": "Drafted by Dustin in round 4 (not kept)"}, {"d": "2025", "t": "Drafted by Mike in round 3"}, {"d": "Aug 22, 2026", "t": "Kept by Mike in round 3"}]}, {"id": "p15", "name": "Saquon Barkley", "pos": "RB", "team": "Thomas", "kept": [2024, 2025, 2026], "sid": "4866", "round": 2, "path": [{"d": "2024", "t": "Drafted by Thomas in round 2"}, {"d": "2025", "t": "Kept by Thomas in round 2"}, {"d": "Aug 22, 2026", "t": "Kept by Thomas in round 2"}]}, {"id": "p16", "name": "Tee Higgins", "pos": "WR", "team": "Thomas", "kept": [2024, 2025, 2026], "sid": "6801", "round": 6, "path": [{"d": "2024", "t": "Drafted by Thomas in round 6"}, {"d": "2025", "t": "Kept by Thomas in round 6"}, {"d": "Aug 22, 2026", "t": "Kept by Thomas in round 6"}]}, {"id": "p17", "name": "Jahmyr Gibbs", "pos": "RB", "team": "Dustin", "kept": [2024, 2025, 2026], "sid": "9221", "round": 2, "path": [{"d": "2024", "t": "Drafted by Dustin in round 2"}, {"d": "2025", "t": "Kept by Dustin in round 2"}, {"d": "Aug 22, 2026", "t": "Kept by Dustin in round 2"}]}, {"id": "p18", "name": "Josh Allen", "pos": "QB", "team": "Dustin", "kept": [2025, 2026], "round": 3, "sid": "4984", "path": [{"d": "2024", "t": "Drafted by Chris in round 3 (not kept)"}, {"d": "2025", "t": "Drafted by Dustin in round 3"}, {"d": "Aug 22, 2026", "t": "Kept by Dustin in round 3"}]}, {"id": "p19", "name": "De'Von Achane", "pos": "RB", "team": "Matt", "kept": [2024, 2025, 2026], "sid": "9226", "round": 2, "path": [{"d": "2024", "t": "Drafted by Matt in round 2"}, {"d": "2025", "t": "Kept by Matt in round 2"}, {"d": "Aug 22, 2026", "t": "Kept by Matt in round 2"}]}, {"id": "p20", "name": "Jameson Williams", "pos": "WR", "team": "Matt", "kept": [2025, 2026], "round": 4, "sid": "8148", "path": [{"d": "2024", "t": "Drafted by Frank in round 11 (not kept)"}, {"d": "2025", "t": "Drafted by Matt in round 4"}, {"d": "Aug 22, 2026", "t": "Kept by Matt in round 4"}]}, {"id": "p21", "name": "Christian McCaffrey", "pos": "RB", "team": "Frank", "kept": [2024, 2025, 2026], "sid": "4034", "round": 2, "path": [{"d": "2024", "t": "Drafted by Mike in round 1"}, {"d": "2024", "t": "Acquired by Frank during the season"}, {"d": "2025", "t": "Kept by Frank in round 2"}, {"d": "Aug 22, 2026", "t": "Kept by Frank in round 2"}]}, {"id": "p22", "name": "Brock Bowers", "pos": "TE", "team": "Frank", "kept": [2024, 2025, 2026], "sid": "11604", "round": 12, "path": [{"d": "2024", "t": "Drafted by Chris in round 12"}, {"d": "2024", "t": "Acquired by Frank during the season"}, {"d": "2025", "t": "Kept by Frank in round 12"}, {"d": "Aug 22, 2026", "t": "Kept by Frank in round 12"}]}, {"id": "p23", "name": "DeVonta Smith", "pos": "WR", "team": "Nick", "kept": [2025, 2026], "round": 4, "sid": "7525", "path": [{"d": "2024", "t": "Drafted by Trey in round 3 (not kept)"}, {"d": "2025", "t": "Drafted by Nick in round 4"}, {"d": "Aug 22, 2026", "t": "Kept by Nick in round 4"}]}, {"id": "p24", "name": "Cam Skattebo", "pos": "RB", "team": "Nick", "kept": [2025, 2026], "round": 9, "sid": "12481", "path": [{"d": "2025", "t": "Drafted by Nick in round 9"}, {"d": "Aug 22, 2026", "t": "Kept by Nick in round 9"}]}, {"id": "s10219", "sid": "10219", "name": "Chris Rodriguez", "pos": "RB", "team": "Christian", "kept": [2026], "round": 12, "path": [{"d": "Aug 22, 2026", "t": "Drafted by Christian in round 12"}]}, {"id": "s11632", "sid": "11632", "name": "Malik Nabers", "pos": "WR", "team": "Christian", "kept": [2026], "round": 3, "path": [{"d": "2024", "t": "Drafted by Mike in round 4"}, {"d": "2025", "t": "Kept by Mike in round 4"}, {"d": "Aug 22, 2026", "t": "Drafted by Christian in round 3"}]}, {"id": "s12518", "sid": "12518", "name": "Tyler Warren", "pos": "TE", "team": "Christian", "kept": [2026], "round": 5, "path": [{"d": "2025", "t": "Drafted by Mike in round 12 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Christian in round 5"}]}, {"id": "s13281", "sid": "13281", "name": "Jordyn Tyson", "pos": "WR", "team": "Christian", "kept": [2026], "round": 9, "path": [{"d": "Aug 22, 2026", "t": "Drafted by Christian in round 9"}]}, {"id": "s5001", "sid": "5001", "name": "Dalton Schultz", "pos": "TE", "team": "Christian", "kept": [2026], "round": 14, "path": [{"d": "2024", "t": "Drafted by Christian in round 13 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Christian in round 14"}]}, {"id": "s5846", "sid": "5846", "name": "DK Metcalf", "pos": "WR", "team": "Christian", "kept": [2026], "round": 7, "path": [{"d": "2024", "t": "Drafted by Nick in round 3 (not kept)"}, {"d": "2025", "t": "Drafted by Anthony in round 3 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Christian in round 7"}]}, {"id": "s7594", "sid": "7594", "name": "Chuba Hubbard", "pos": "RB", "team": "Christian", "kept": [2026], "round": 6, "path": [{"d": "2024", "t": "Drafted by Nick in round 13 (not kept)"}, {"d": "2025", "t": "Drafted by Trey in round 3 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Christian in round 6"}]}, {"id": "s8112", "sid": "8112", "name": "Drake London", "pos": "WR", "team": "Christian", "kept": [2026], "round": 2, "path": [{"d": "2024", "t": "Drafted by Alex in round 2 (not kept)"}, {"d": "2025", "t": "Drafted by Dustin in round 1 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Christian in round 2"}]}, {"id": "s9509", "sid": "9509", "name": "Bijan Robinson", "pos": "RB", "team": "Christian", "kept": [2026], "round": 1, "path": [{"d": "2024", "t": "Drafted by Nick in round 1"}, {"d": "2025", "t": "Kept by Nick in round 1"}, {"d": "Aug 22, 2026", "t": "Drafted by Christian in round 1"}]}, {"id": "s12529", "sid": "12529", "name": "TreVeyon Henderson", "pos": "RB", "team": "Thomas", "kept": [2026], "round": 4, "path": [{"d": "2025", "t": "Drafted by Chris in round 4 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Thomas in round 4"}]}, {"id": "s13346", "sid": "13346", "name": "Denzel Boston", "pos": "WR", "team": "Thomas", "kept": [2026], "round": null, "adp": true, "path": [{"d": "Aug 22, 2026", "t": "Drafted by Frank in round 11"}, {"d": "Sep 13, 2026", "t": "Dropped by Frank"}, {"d": "Sep 16, 2026", "t": "Picked up by Mike"}, {"d": "Oct 6, 2026", "t": "Traded from Mike to Thomas"}]}, {"id": "s4035", "sid": "4035", "name": "Alvin Kamara", "pos": "RB", "team": "Thomas", "kept": [2026], "round": 13, "path": [{"d": "2024", "t": "Drafted by Chris in round 5 (not kept)"}, {"d": "2025", "t": "Drafted by Frank in round 3 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Thomas in round 13"}]}, {"id": "s421", "sid": "421", "name": "Matthew Stafford", "pos": "QB", "team": "Thomas", "kept": [2026], "round": 8, "path": [{"d": "2024", "t": "Drafted by Frank in round 17 (not kept)"}, {"d": "2025", "t": "Drafted by Anthony in round 13 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Thomas in round 8"}]}, {"id": "s5022", "sid": "5022", "name": "Dallas Goedert", "pos": "TE", "team": "Thomas", "kept": [2026], "round": 7, "path": [{"d": "2024", "t": "Drafted by Mike in round 8 (not kept)"}, {"d": "2025", "t": "Drafted by Dustin in round 11 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Thomas in round 7"}]}, {"id": "s5859", "sid": "5859", "name": "A.J. Brown", "pos": "WR", "team": "Thomas", "kept": [2026], "round": 1, "path": [{"d": "2024", "t": "Drafted by Frank in round 1 (not kept)"}, {"d": "2025", "t": "Drafted by Matt in round 1 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Thomas in round 1"}]}, {"id": "s9487", "sid": "9487", "name": "Parker Washington", "pos": "WR", "team": "Thomas", "kept": [2026], "round": 5, "path": [{"d": "Aug 22, 2026", "t": "Drafted by Thomas in round 5"}]}, {"id": "s9753", "sid": "9753", "name": "Zach Charbonnet", "pos": "RB", "team": "Thomas", "kept": [2026], "round": 9, "path": [{"d": "2024", "t": "Drafted by Alex in round 13 (not kept)"}, {"d": "2025", "t": "Drafted by Matt in round 6 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Thomas in round 9"}]}, {"id": "s9997", "sid": "9997", "name": "Zay Flowers", "pos": "WR", "team": "Thomas", "kept": [2026], "round": 3, "path": [{"d": "2024", "t": "Drafted by Thomas in round 4 (not kept)"}, {"d": "2025", "t": "Drafted by Thomas in round 4 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Thomas in round 3"}]}, {"id": "s10222", "sid": "10222", "name": "Jayden Reed", "pos": "WR", "team": "Jordan", "kept": [2026], "round": 6, "path": [{"d": "2024", "t": "Drafted by Frank in round 7 (not kept)"}, {"d": "2025", "t": "Drafted by Chris in round 8 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Jordan in round 6"}]}, {"id": "s11624", "sid": "11624", "name": "Xavier Worthy", "pos": "WR", "team": "Jordan", "kept": [2026], "round": null, "adp": true, "path": [{"d": "2024", "t": "Drafted by Anthony in round 9 (not kept)"}, {"d": "2025", "t": "Drafted by Jordan in round 3 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Trey in round 10"}, {"d": "Sep 30, 2026", "t": "Dropped by Trey"}, {"d": "Oct 3, 2026", "t": "Picked up by Jordan"}]}, {"id": "s12519", "sid": "12519", "name": "Luther Burden", "pos": "WR", "team": "Jordan", "kept": [2026], "round": 4, "path": [{"d": "2025", "t": "Drafted by Mike in round 13 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Jordan in round 4"}]}, {"id": "s13286", "sid": "13286", "name": "Jadarian Price", "pos": "RB", "team": "Jordan", "kept": [2026], "round": 5, "path": [{"d": "Aug 22, 2026", "t": "Drafted by Jordan in round 5"}]}, {"id": "s3163", "sid": "3163", "name": "Jared Goff", "pos": "QB", "team": "Jordan", "kept": [2026], "round": 11, "path": [{"d": "2024", "t": "Drafted by Anthony in round 8 (not kept)"}, {"d": "2025", "t": "Drafted by Thomas in round 11 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Jordan in round 11"}]}, {"id": "s3198", "sid": "3198", "name": "Derrick Henry", "pos": "RB", "team": "Jordan", "kept": [2026], "round": 1, "path": [{"d": "2024", "t": "Drafted by Christian in round 2 (not kept)"}, {"d": "2025", "t": "Drafted by Thomas in round 1 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Jordan in round 1"}]}, {"id": "s7567", "sid": "7567", "name": "Kenny Gainwell", "pos": "RB", "team": "Jordan", "kept": [2026], "round": 9, "path": [{"d": "Aug 22, 2026", "t": "Drafted by Jordan in round 9"}]}, {"id": "s7588", "sid": "7588", "name": "Javonte Williams", "pos": "RB", "team": "Jordan", "kept": [2026], "round": 3, "path": [{"d": "2024", "t": "Drafted by Chris in round 7 (not kept)"}, {"d": "2025", "t": "Drafted by Dustin in round 10 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Jordan in round 3"}]}, {"id": "s8110", "sid": "8110", "name": "Jake Ferguson", "pos": "TE", "team": "Jordan", "kept": [2026], "round": 8, "path": [{"d": "2024", "t": "Drafted by Matt in round 7 (not kept)"}, {"d": "2025", "t": "Drafted by Matt in round 10 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Jordan in round 8"}]}, {"id": "s11584", "sid": "11584", "name": "Bucky Irving", "pos": "RB", "team": "Anthony", "kept": [2026], "round": 3, "path": [{"d": "2024", "t": "Drafted by Matt in round 14"}, {"d": "2025", "t": "Kept by Matt in round 14"}, {"d": "Aug 22, 2026", "t": "Drafted by Chris in round 3"}, {"d": "Oct 16, 2026", "t": "Traded from Chris to Anthony"}]}, {"id": "s11646", "sid": "11646", "name": "Jalen Coker", "pos": "WR", "team": "Anthony", "kept": [2026], "round": null, "adp": true, "path": [{"d": "Aug 22, 2026", "t": "Drafted by Jordan in round 12"}, {"d": "Sep 9, 2026", "t": "Dropped by Jordan"}, {"d": "Sep 10, 2026", "t": "Picked up by Thomas"}, {"d": "Oct 6, 2026", "t": "Traded from Thomas to Mike"}, {"d": "Oct 20, 2026", "t": "Traded from Mike to Anthony"}]}, {"id": "s12474", "sid": "12474", "name": "Woody Marks", "pos": "RB", "team": "Anthony", "kept": [2026], "round": 12, "path": [{"d": "Aug 22, 2026", "t": "Drafted by Anthony in round 12"}]}, {"id": "s1466", "sid": "1466", "name": "Travis Kelce", "pos": "TE", "team": "Anthony", "kept": [2026], "round": 7, "path": [{"d": "2024", "t": "Drafted by Thomas in round 3 (not kept)"}, {"d": "2025", "t": "Drafted by Mike in round 7 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Anthony in round 7"}]}, {"id": "s2216", "sid": "2216", "name": "Mike Evans", "pos": "WR", "team": "Anthony", "kept": [2026], "round": 4, "path": [{"d": "2024", "t": "Drafted by Mike in round 2 (not kept)"}, {"d": "2025", "t": "Drafted by Christian in round 3 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Anthony in round 4"}]}, {"id": "s4046", "sid": "4046", "name": "Patrick Mahomes", "pos": "QB", "team": "Anthony", "kept": [2026], "round": 10, "path": [{"d": "2024", "t": "Drafted by Alex in round 4 (not kept)"}, {"d": "2025", "t": "Drafted by Frank in round 7 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Anthony in round 10"}]}, {"id": "s5045", "sid": "5045", "name": "Courtland Sutton", "pos": "WR", "team": "Anthony", "kept": [2026], "round": 8, "path": [{"d": "2024", "t": "Drafted by Dustin in round 9 (not kept)"}, {"d": "2025", "t": "Drafted by Frank in round 4 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Anthony in round 8"}]}, {"id": "s5850", "sid": "5850", "name": "Josh Jacobs", "pos": "RB", "team": "Anthony", "kept": [2026], "round": 3, "path": [{"d": "2024", "t": "Drafted by Anthony in round 3 (not kept)"}, {"d": "2025", "t": "Drafted by Anthony in round 1 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Anthony in round 3"}]}, {"id": "s6804", "sid": "6804", "name": "Jordan Love", "pos": "QB", "team": "Anthony", "kept": [2026], "round": 13, "path": [{"d": "2024", "t": "Drafted by Mike in round 7 (not kept)"}, {"d": "2025", "t": "Drafted by Jordan in round 11 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Anthony in round 13"}]}, {"id": "s7569", "sid": "7569", "name": "Nico Collins", "pos": "WR", "team": "Anthony", "kept": [2026], "round": 3, "path": [{"d": "2024", "t": "Drafted by Mike in round 3 (not kept)"}, {"d": "2025", "t": "Drafted by Trey in round 1 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Trey in round 3"}, {"d": "Sep 30, 2026", "t": "Traded from Trey to Mike"}, {"d": "Oct 20, 2026", "t": "Traded from Mike to Anthony"}]}, {"id": "s8136", "sid": "8136", "name": "Rachaad White", "pos": "RB", "team": "Anthony", "kept": [2026], "round": null, "adp": true, "path": [{"d": "2024", "t": "Drafted by Nick in round 4 (not kept)"}, {"d": "2025", "t": "Drafted by Jordan in round 10 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Mike in round 13"}, {"d": "Sep 13, 2026", "t": "Dropped by Mike"}, {"d": "Sep 23, 2026", "t": "Picked up by Chris"}, {"d": "Sep 24, 2026", "t": "Dropped by Chris"}, {"d": "Sep 27, 2026", "t": "Picked up by Chris"}, {"d": "Oct 2, 2026", "t": "Dropped by Chris"}, {"d": "Oct 16, 2026", "t": "Picked up by Anthony"}]}, {"id": "s8408", "sid": "8408", "name": "Jordan Mason", "pos": "RB", "team": "Anthony", "kept": [2026], "round": 9, "path": [{"d": "2024", "t": "Drafted by Trey in round 13 (not kept)"}, {"d": "2025", "t": "Drafted by Alex in round 8 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Anthony in round 9"}]}, {"id": "s9756", "sid": "9756", "name": "Jordan Addison", "pos": "WR", "team": "Anthony", "kept": [2026], "round": null, "adp": true, "path": [{"d": "2024", "t": "Drafted by Trey in round 10 (not kept)"}, {"d": "2025", "t": "Drafted by Trey in round 8 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Chris in round 10"}, {"d": "Sep 13, 2026", "t": "Dropped by Chris"}, {"d": "Sep 22, 2026", "t": "Picked up by Anthony"}]}, {"id": "s11586", "sid": "11586", "name": "Blake Corum", "pos": "RB", "team": "Frank", "kept": [2026], "round": 8, "path": [{"d": "2024", "t": "Drafted by Trey in round 11 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Frank in round 8"}]}, {"id": "s1479", "sid": "1479", "name": "Keenan Allen", "pos": "WR", "team": "Frank", "kept": [2026], "round": null, "adp": true, "path": [{"d": "2024", "t": "Drafted by Matt in round 6 (not kept)"}, {"d": "2025", "t": "Drafted by Christian in round 12 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Dustin in round 15"}, {"d": "Oct 3, 2026", "t": "Dropped by Dustin"}, {"d": "Oct 15, 2026", "t": "Picked up by Frank"}]}, {"id": "s2133", "sid": "2133", "name": "Davante Adams", "pos": "WR", "team": "Frank", "kept": [2026], "round": 5, "path": [{"d": "2024", "t": "Drafted by Nick in round 2"}, {"d": "2025", "t": "Kept by Nick in round 2"}, {"d": "Aug 22, 2026", "t": "Drafted by Frank in round 5"}]}, {"id": "s6770", "sid": "6770", "name": "Joe Burrow", "pos": "QB", "team": "Frank", "kept": [2026], "round": 7, "path": [{"d": "2024", "t": "Drafted by Trey in round 7"}, {"d": "2025", "t": "Kept by Trey in round 7"}, {"d": "Aug 22, 2026", "t": "Drafted by Frank in round 7"}]}, {"id": "s6783", "sid": "6783", "name": "Jerry Jeudy", "pos": "WR", "team": "Frank", "kept": [2026], "round": null, "adp": true, "path": [{"d": "2024", "t": "Drafted by Jordan in round 13 (not kept)"}, {"d": "2025", "t": "Drafted by Thomas in round 5 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Anthony in round 15"}, {"d": "Aug 26, 2026", "t": "Dropped by Anthony"}, {"d": "Oct 24, 2026", "t": "Picked up by Frank"}]}, {"id": "s7526", "sid": "7526", "name": "Jaylen Waddle", "pos": "WR", "team": "Frank", "kept": [2026], "round": 4, "path": [{"d": "2024", "t": "Drafted by Dustin in round 3 (not kept)"}, {"d": "2025", "t": "Drafted by Nick in round 5 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Frank in round 4"}]}, {"id": "s8155", "sid": "8155", "name": "Breece Hall", "pos": "RB", "team": "Frank", "kept": [2026], "round": 2, "path": [{"d": "2024", "t": "Drafted by Alex in round 1 (not kept)"}, {"d": "2025", "t": "Drafted by Dustin in round 4 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Alex in round 2"}, {"d": "Oct 26, 2026", "t": "Traded from Alex to Frank"}]}, {"id": "s9493", "sid": "9493", "name": "Puka Nacua", "pos": "WR", "team": "Frank", "kept": [2026], "round": 1, "path": [{"d": "2024", "t": "Drafted by Dustin in round 1 (not kept)"}, {"d": "2025", "t": "Drafted by Mike in round 1 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Alex in round 1"}, {"d": "Oct 26, 2026", "t": "Traded from Alex to Frank"}]}, {"id": "s11566", "sid": "11566", "name": "Jayden Daniels", "pos": "QB", "team": "Mike", "kept": [2026], "round": 6, "path": [{"d": "2024", "t": "Drafted by Mike in round 11"}, {"d": "2025", "t": "Kept by Mike in round 11"}, {"d": "Aug 22, 2026", "t": "Drafted by Mike in round 6"}]}, {"id": "s12517", "sid": "12517", "name": "Colston Loveland", "pos": "TE", "team": "Mike", "kept": [2026], "round": 4, "path": [{"d": "2025", "t": "Drafted by Trey in round 10 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Mike in round 4"}]}, {"id": "s12530", "sid": "12530", "name": "Travis Hunter", "pos": "WR", "team": "Mike", "kept": [2026], "round": null, "adp": true, "path": [{"d": "2025", "t": "Drafted by Dustin in round 6 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Christian in round 13"}, {"d": "Sep 13, 2026", "t": "Dropped by Christian"}, {"d": "Oct 21, 2026", "t": "Picked up by Mike"}]}, {"id": "s13276", "sid": "13276", "name": "Omar Cooper", "pos": "WR", "team": "Mike", "kept": [2026], "round": null, "adp": true, "path": [{"d": "Aug 22, 2026", "t": "Drafted by Alex in round 13"}, {"d": "Sep 28, 2026", "t": "Dropped by Alex"}, {"d": "Oct 16, 2026", "t": "Picked up by Mike"}]}, {"id": "s13298", "sid": "13298", "name": "KC Concepcion", "pos": "WR", "team": "Mike", "kept": [2026], "round": 8, "path": [{"d": "Aug 22, 2026", "t": "Drafted by Mike in round 8"}]}, {"id": "s13305", "sid": "13305", "name": "Mike Washington", "pos": "RB", "team": "Mike", "kept": [2026], "round": null, "adp": true, "path": [{"d": "Aug 22, 2026", "t": "Drafted by Frank in round 15"}, {"d": "Sep 29, 2026", "t": "Dropped by Frank"}, {"d": "Oct 1, 2026", "t": "Picked up by Mike"}]}, {"id": "s4983", "sid": "4983", "name": "DJ Moore", "pos": "WR", "team": "Mike", "kept": [2026], "round": 5, "path": [{"d": "2024", "t": "Drafted by Jordan in round 3 (not kept)"}, {"d": "2025", "t": "Drafted by Mike in round 5 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Anthony in round 5"}, {"d": "Oct 20, 2026", "t": "Traded from Anthony to Mike"}]}, {"id": "s8151", "sid": "8151", "name": "Kenneth Walker", "pos": "RB", "team": "Mike", "kept": [2026], "round": 1, "path": [{"d": "2024", "t": "Drafted by Mike in round 5 (not kept)"}, {"d": "2025", "t": "Drafted by Nick in round 3 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Mike in round 1"}]}, {"id": "s8167", "sid": "8167", "name": "Christian Watson", "pos": "WR", "team": "Mike", "kept": [2026], "round": 5, "path": [{"d": "2024", "t": "Drafted by Chris in round 8 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Mike in round 5"}]}, {"id": "s8183", "sid": "8183", "name": "Brock Purdy", "pos": "QB", "team": "Mike", "kept": [2026], "round": 14, "path": [{"d": "2024", "t": "Drafted by Thomas in round 8 (not kept)"}, {"d": "2025", "t": "Drafted by Dustin in round 9 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Mike in round 14"}]}, {"id": "s11620", "sid": "11620", "name": "Rome Odunze", "pos": "WR", "team": "Chris", "kept": [2026], "round": 5, "path": [{"d": "2024", "t": "Drafted by Christian in round 9 (not kept)"}, {"d": "2025", "t": "Drafted by Trey in round 4 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Chris in round 5"}]}, {"id": "s12545", "sid": "12545", "name": "Tyler Shough", "pos": "QB", "team": "Chris", "kept": [2026], "round": 14, "path": [{"d": "Aug 22, 2026", "t": "Drafted by Chris in round 14"}]}, {"id": "s13279", "sid": "13279", "name": "Carnell Tate", "pos": "WR", "team": "Chris", "kept": [2026], "round": 6, "path": [{"d": "Aug 22, 2026", "t": "Drafted by Chris in round 6"}]}, {"id": "s4037", "sid": "4037", "name": "Chris Godwin", "pos": "WR", "team": "Chris", "kept": [2026], "round": 8, "path": [{"d": "2024", "t": "Drafted by Alex in round 7 (not kept)"}, {"d": "2025", "t": "Drafted by Frank in round 8 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Chris in round 8"}]}, {"id": "s5892", "sid": "5892", "name": "David Montgomery", "pos": "RB", "team": "Chris", "kept": [2026], "round": 4, "path": [{"d": "2024", "t": "Drafted by Trey in round 5 (not kept)"}, {"d": "2025", "t": "Drafted by Anthony in round 5 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Chris in round 4"}]}, {"id": "s6786", "sid": "6786", "name": "CeeDee Lamb", "pos": "WR", "team": "Chris", "kept": [2026], "round": 1, "path": [{"d": "2024", "t": "Drafted by Chris in round 1"}, {"d": "2025", "t": "Kept by Chris in round 1"}, {"d": "Aug 22, 2026", "t": "Drafted by Chris in round 1"}]}, {"id": "s7002", "sid": "7002", "name": "Juwan Johnson", "pos": "TE", "team": "Chris", "kept": [2026], "round": 15, "path": [{"d": "Aug 22, 2026", "t": "Drafted by Chris in round 15"}]}, {"id": "s7547", "sid": "7547", "name": "Amon-Ra St. Brown", "pos": "WR", "team": "Chris", "kept": [2026], "round": 1, "path": [{"d": "2024", "t": "Drafted by Jordan in round 1"}, {"d": "2025", "t": "Kept by Jordan in round 1"}, {"d": "Aug 22, 2026", "t": "Drafted by Anthony in round 1"}, {"d": "Oct 16, 2026", "t": "Traded from Anthony to Chris"}]}, {"id": "s8134", "sid": "8134", "name": "Khalil Shakir", "pos": "WR", "team": "Chris", "kept": [2026], "round": null, "adp": true, "path": [{"d": "2024", "t": "Drafted by Frank in round 12 (not kept)"}, {"d": "2025", "t": "Drafted by Matt in round 8 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Thomas in round 11"}, {"d": "Sep 30, 2026", "t": "Dropped by Thomas"}, {"d": "Oct 4, 2026", "t": "Picked up by Chris"}]}, {"id": "s11603", "sid": "11603", "name": "AJ Barner", "pos": "TE", "team": "Matt", "kept": [2026], "round": 12, "path": [{"d": "Aug 22, 2026", "t": "Drafted by Matt in round 12"}]}, {"id": "s11610", "sid": "11610", "name": "Malik Washington", "pos": "WR", "team": "Matt", "kept": [2026], "round": 15, "path": [{"d": "Aug 22, 2026", "t": "Drafted by Matt in round 15"}]}, {"id": "s11628", "sid": "11628", "name": "Marvin Harrison", "pos": "WR", "team": "Matt", "kept": [2026], "round": 5, "path": [{"d": "2024", "t": "Drafted by Anthony in round 2 (not kept)"}, {"d": "2025", "t": "Drafted by Alex in round 2 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Matt in round 5"}]}, {"id": "s11635", "sid": "11635", "name": "Ladd McConkey", "pos": "WR", "team": "Matt", "kept": [2026], "round": 3, "path": [{"d": "2024", "t": "Drafted by Chris in round 9"}, {"d": "2025", "t": "Kept by Chris in round 9"}, {"d": "Aug 22, 2026", "t": "Drafted by Matt in round 3"}]}, {"id": "s11655", "sid": "11655", "name": "Tyrone Tracy", "pos": "RB", "team": "Matt", "kept": [2026], "round": 14, "path": [{"d": "2024", "t": "Drafted by Dustin in round 15 (not kept)"}, {"d": "2025", "t": "Drafted by Alex in round 7 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Matt in round 14"}]}, {"id": "s12501", "sid": "12501", "name": "Matthew Golden", "pos": "WR", "team": "Matt", "kept": [2026], "round": 8, "path": [{"d": "2025", "t": "Drafted by Thomas in round 8 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Matt in round 8"}]}, {"id": "s3294", "sid": "3294", "name": "Dak Prescott", "pos": "QB", "team": "Matt", "kept": [2026], "round": 10, "path": [{"d": "2024", "t": "Drafted by Nick in round 7 (not kept)"}, {"d": "2025", "t": "Drafted by Matt in round 11 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Matt in round 10"}]}, {"id": "s4892", "sid": "4892", "name": "Baker Mayfield", "pos": "QB", "team": "Matt", "kept": [2026], "round": 11, "path": [{"d": "2024", "t": "Drafted by Anthony in round 17"}, {"d": "2025", "t": "Kept by Anthony in round 17"}, {"d": "Aug 22, 2026", "t": "Drafted by Matt in round 11"}]}, {"id": "s8150", "sid": "8150", "name": "Kyren Williams", "pos": "RB", "team": "Matt", "kept": [2026], "round": 1, "path": [{"d": "2024", "t": "Drafted by Frank in round 2 (not kept)"}, {"d": "2025", "t": "Drafted by Christian in round 2 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Matt in round 1"}]}, {"id": "s8180", "sid": "8180", "name": "Jalen Nailor", "pos": "WR", "team": "Matt", "kept": [2026], "round": 13, "path": [{"d": "Aug 22, 2026", "t": "Drafted by Matt in round 13"}]}, {"id": "s8228", "sid": "8228", "name": "Jaylen Warren", "pos": "RB", "team": "Matt", "kept": [2026], "round": 6, "path": [{"d": "2024", "t": "Drafted by Alex in round 8 (not kept)"}, {"d": "2025", "t": "Drafted by Jordan in round 6 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Matt in round 6"}]}, {"id": "s9480", "sid": "9480", "name": "Brenton Strange", "pos": "TE", "team": "Matt", "kept": [2026], "round": 7, "path": [{"d": "2025", "t": "Drafted by Chris in round 16 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Matt in round 7"}]}, {"id": "s11560", "sid": "11560", "name": "Caleb Williams", "pos": "QB", "team": "Dustin", "kept": [2026], "round": 9, "path": [{"d": "2024", "t": "Drafted by Alex in round 11"}, {"d": "2025", "t": "Kept by Alex in round 11"}, {"d": "Aug 22, 2026", "t": "Drafted by Dustin in round 9"}]}, {"id": "s11631", "sid": "11631", "name": "Brian Thomas", "pos": "WR", "team": "Dustin", "kept": [2026], "round": 5, "path": [{"d": "2024", "t": "Drafted by Dustin in round 7"}, {"d": "2025", "t": "Kept by Dustin in round 7"}, {"d": "Aug 22, 2026", "t": "Drafted by Dustin in round 5"}]}, {"id": "s12512", "sid": "12512", "name": "Quinshon Judkins", "pos": "RB", "team": "Dustin", "kept": [2026], "round": 4, "path": [{"d": "2025", "t": "Drafted by Frank in round 10 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Dustin in round 4"}]}, {"id": "s12533", "sid": "12533", "name": "Jacory Croskey-Merritt", "pos": "RB", "team": "Dustin", "kept": [2026], "round": 8, "path": [{"d": "2025", "t": "Drafted by Mike in round 14 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Dustin in round 8"}]}, {"id": "s13293", "sid": "13293", "name": "Ja'Kobi Lane", "pos": "WR", "team": "Dustin", "kept": [2026], "round": 12, "path": [{"d": "Aug 22, 2026", "t": "Drafted by Dustin in round 12"}]}, {"id": "s2449", "sid": "2449", "name": "Stefon Diggs", "pos": "WR", "team": "Dustin", "kept": [2026], "round": 10, "path": [{"d": "2024", "t": "Drafted by Christian in round 5 (not kept)"}, {"d": "2025", "t": "Drafted by Matt in round 7 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Dustin in round 10"}]}, {"id": "s6794", "sid": "6794", "name": "Justin Jefferson", "pos": "WR", "team": "Dustin", "kept": [2026], "round": 1, "path": [{"d": "2024", "t": "Drafted by Thomas in round 1 (not kept)"}, {"d": "2025", "t": "Drafted by Frank in round 1 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Dustin in round 1"}]}, {"id": "s8131", "sid": "8131", "name": "Isaiah Likely", "pos": "TE", "team": "Dustin", "kept": [2026], "round": 11, "path": [{"d": "2024", "t": "Drafted by Thomas in round 16 (not kept)"}, {"d": "2025", "t": "Drafted by Mike in round 16 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Dustin in round 11"}]}, {"id": "s8142", "sid": "8142", "name": "Alec Pierce", "pos": "WR", "team": "Dustin", "kept": [2026], "round": 7, "path": [{"d": "2025", "t": "Drafted by Frank in round 17 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Dustin in round 7"}]}, {"id": "s9484", "sid": "9484", "name": "Tucker Kraft", "pos": "TE", "team": "Dustin", "kept": [2026], "round": 6, "path": [{"d": "2025", "t": "Drafted by Dustin in round 8 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Dustin in round 6"}]}, {"id": "s10859", "sid": "10859", "name": "Sam LaPorta", "pos": "TE", "team": "Nick", "kept": [2026], "round": 5, "path": [{"d": "2024", "t": "Drafted by Frank in round 3 (not kept)"}, {"d": "2025", "t": "Drafted by Matt in round 5 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Nick in round 5"}]}, {"id": "s11563", "sid": "11563", "name": "Bo Nix", "pos": "QB", "team": "Nick", "kept": [2026], "round": null, "adp": true, "path": [{"d": "2025", "t": "Drafted by Nick in round 7 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Christian in round 10"}, {"d": "Oct 6, 2026", "t": "Dropped by Christian"}, {"d": "Oct 11, 2026", "t": "Picked up by Trey"}, {"d": "Oct 13, 2026", "t": "Dropped by Trey"}, {"d": "Oct 15, 2026", "t": "Picked up by Nick"}]}, {"id": "s13287", "sid": "13287", "name": "Jeremiyah Love", "pos": "RB", "team": "Nick", "kept": [2026], "round": 1, "path": [{"d": "Aug 22, 2026", "t": "Drafted by Nick in round 1"}]}, {"id": "s13294", "sid": "13294", "name": "Makai Lemon", "pos": "WR", "team": "Nick", "kept": [2026], "round": 8, "path": [{"d": "Aug 22, 2026", "t": "Drafted by Nick in round 8"}]}, {"id": "s5849", "sid": "5849", "name": "Kyler Murray", "pos": "QB", "team": "Nick", "kept": [2026], "round": 15, "path": [{"d": "2024", "t": "Drafted by Dustin in round 6 (not kept)"}, {"d": "2025", "t": "Drafted by Frank in round 11 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Nick in round 15"}]}, {"id": "s5872", "sid": "5872", "name": "Deebo Samuel", "pos": "WR", "team": "Nick", "kept": [2026], "round": 12, "path": [{"d": "2024", "t": "Drafted by Matt in round 3 (not kept)"}, {"d": "2025", "t": "Drafted by Anthony in round 7 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Nick in round 12"}]}, {"id": "s5947", "sid": "5947", "name": "Jakobi Meyers", "pos": "WR", "team": "Nick", "kept": [2026], "round": 10, "path": [{"d": "2024", "t": "Drafted by Mike in round 13 (not kept)"}, {"d": "2025", "t": "Drafted by Trey in round 6 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Nick in round 10"}]}, {"id": "s5967", "sid": "5967", "name": "Tony Pollard", "pos": "RB", "team": "Nick", "kept": [2026], "round": 7, "path": [{"d": "2024", "t": "Drafted by Christian in round 7 (not kept)"}, {"d": "2025", "t": "Drafted by Jordan in round 4 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Nick in round 7"}]}, {"id": "s8132", "sid": "8132", "name": "Tyler Allgeier", "pos": "RB", "team": "Nick", "kept": [2026], "round": 11, "path": [{"d": "2024", "t": "Drafted by Trey in round 16 (not kept)"}, {"d": "2025", "t": "Drafted by Jordan in round 14 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Nick in round 11"}]}, {"id": "s8137", "sid": "8137", "name": "George Pickens", "pos": "WR", "team": "Nick", "kept": [2026], "round": 2, "path": [{"d": "2024", "t": "Drafted by Anthony in round 6 (not kept)"}, {"d": "2025", "t": "Drafted by Anthony in round 4 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Nick in round 2"}]}, {"id": "s8146", "sid": "8146", "name": "Garrett Wilson", "pos": "WR", "team": "Nick", "kept": [2026], "round": 3, "path": [{"d": "2024", "t": "Drafted by Trey in round 1 (not kept)"}, {"d": "2025", "t": "Drafted by Thomas in round 3 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Nick in round 3"}]}, {"id": "s10232", "sid": "10232", "name": "Michael Wilson", "pos": "WR", "team": "Trey", "kept": [2026], "round": 7, "path": [{"d": "2024", "t": "Drafted by Alex in round 15 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Mike in round 7"}, {"d": "Sep 30, 2026", "t": "Traded from Mike to Trey"}]}, {"id": "s12489", "sid": "12489", "name": "RJ Harvey", "pos": "RB", "team": "Trey", "kept": [2026], "round": 6, "path": [{"d": "2025", "t": "Drafted by Christian in round 5 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Trey in round 6"}]}, {"id": "s12506", "sid": "12506", "name": "Harold Fannin", "pos": "TE", "team": "Trey", "kept": [2026], "round": 7, "path": [{"d": "Aug 22, 2026", "t": "Drafted by Trey in round 7"}]}, {"id": "s12534", "sid": "12534", "name": "Kyle Monangai", "pos": "RB", "team": "Trey", "kept": [2026], "round": 8, "path": [{"d": "Aug 22, 2026", "t": "Drafted by Trey in round 8"}]}, {"id": "s13345", "sid": "13345", "name": "Jonah Coleman", "pos": "RB", "team": "Trey", "kept": [2026], "round": null, "adp": true, "path": [{"d": "Aug 22, 2026", "t": "Drafted by Chris in round 12"}, {"d": "Sep 9, 2026", "t": "Dropped by Chris"}, {"d": "Sep 13, 2026", "t": "Picked up by Mike"}, {"d": "Sep 16, 2026", "t": "Dropped by Mike"}, {"d": "Sep 22, 2026", "t": "Picked up by Chris"}, {"d": "Oct 18, 2026", "t": "Dropped by Chris"}, {"d": "Oct 20, 2026", "t": "Picked up by Trey"}]}, {"id": "s3214", "sid": "3214", "name": "Hunter Henry", "pos": "TE", "team": "Trey", "kept": [2026], "round": null, "adp": true, "path": [{"d": "2024", "t": "Drafted by Mike in round 16 (not kept)"}, {"d": "2025", "t": "Drafted by Nick in round 12 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Thomas in round 12"}, {"d": "Sep 13, 2026", "t": "Dropped by Thomas"}, {"d": "Oct 21, 2026", "t": "Picked up by Trey"}]}, {"id": "s4199", "sid": "4199", "name": "Aaron Jones", "pos": "RB", "team": "Trey", "kept": [2026], "round": 11, "path": [{"d": "2024", "t": "Drafted by Jordan in round 5"}, {"d": "2025", "t": "Kept by Jordan in round 5"}, {"d": "Aug 22, 2026", "t": "Drafted by Trey in round 11"}]}, {"id": "s6790", "sid": "6790", "name": "D'Andre Swift", "pos": "RB", "team": "Trey", "kept": [2026], "round": 4, "path": [{"d": "2024", "t": "Drafted by Anthony in round 7 (not kept)"}, {"d": "2025", "t": "Drafted by Mike in round 6 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Trey in round 4"}]}, {"id": "s7564", "sid": "7564", "name": "Ja'Marr Chase", "pos": "WR", "team": "Trey", "kept": [2026], "round": 1, "path": [{"d": "2024", "t": "Drafted by Christian in round 1"}, {"d": "2025", "t": "Kept by Christian in round 1"}, {"d": "Aug 22, 2026", "t": "Drafted by Trey in round 1"}]}, {"id": "s9500", "sid": "9500", "name": "Josh Downs", "pos": "WR", "team": "Trey", "kept": [2026], "round": 10, "path": [{"d": "2024", "t": "Drafted by Thomas in round 14 (not kept)"}, {"d": "2025", "t": "Drafted by Mike in round 8 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Mike in round 10"}, {"d": "Sep 30, 2026", "t": "Traded from Mike to Trey"}]}, {"id": "s9502", "sid": "9502", "name": "Tank Dell", "pos": "WR", "team": "Trey", "kept": [2026], "round": 12, "path": [{"d": "2024", "t": "Drafted by Frank in round 5 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Trey in round 12"}]}, {"id": "s10213", "sid": "10213", "name": "Tre Tucker", "pos": "WR", "team": "Alex", "kept": [2026], "round": 15, "path": [{"d": "Aug 22, 2026", "t": "Drafted by Alex in round 15"}]}, {"id": "s10229", "sid": "10229", "name": "Rashee Rice", "pos": "WR", "team": "Alex", "kept": [2026], "round": 3, "path": [{"d": "2024", "t": "Drafted by Anthony in round 5 (not kept)"}, {"d": "2025", "t": "Drafted by Chris in round 5 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Frank in round 3"}, {"d": "Oct 26, 2026", "t": "Traded from Frank to Alex"}]}, {"id": "s10236", "sid": "10236", "name": "Dalton Kincaid", "pos": "TE", "team": "Alex", "kept": [2026], "round": 9, "path": [{"d": "2024", "t": "Drafted by Dustin in round 5 (not kept)"}, {"d": "2025", "t": "Drafted by Anthony in round 10 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Frank in round 9"}, {"d": "Oct 26, 2026", "t": "Traded from Frank to Alex"}]}, {"id": "s12527", "sid": "12527", "name": "Ashton Jeanty", "pos": "RB", "team": "Alex", "kept": [2026], "round": 1, "path": [{"d": "2025", "t": "Drafted by Alex in round 1 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Frank in round 1"}, {"d": "Oct 26, 2026", "t": "Traded from Frank to Alex"}]}, {"id": "s6806", "sid": "6806", "name": "J.K. Dobbins", "pos": "RB", "team": "Alex", "kept": [2026], "round": 8, "path": [{"d": "2024", "t": "Drafted by Frank in round 13 (not kept)"}, {"d": "2025", "t": "Drafted by Anthony in round 8 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Alex in round 8"}]}, {"id": "s6819", "sid": "6819", "name": "Michael Pittman", "pos": "WR", "team": "Alex", "kept": [2026], "round": 9, "path": [{"d": "2024", "t": "Drafted by Trey in round 4 (not kept)"}, {"d": "2025", "t": "Drafted by Christian in round 9 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Alex in round 9"}]}, {"id": "s7021", "sid": "7021", "name": "Rico Dowdle", "pos": "RB", "team": "Alex", "kept": [2026], "round": null, "adp": true, "path": [{"d": "2024", "t": "Drafted by Dustin in round 10 (not kept)"}, {"d": "2025", "t": "Drafted by Thomas in round 17 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Chris in round 7"}, {"d": "Sep 22, 2026", "t": "Dropped by Chris"}, {"d": "Oct 9, 2026", "t": "Picked up by Alex"}]}, {"id": "s7523", "sid": "7523", "name": "Trevor Lawrence", "pos": "QB", "team": "Alex", "kept": [2026], "round": 7, "path": [{"d": "2024", "t": "Drafted by Christian in round 12 (not kept)"}, {"d": "2025", "t": "Drafted by Alex in round 10 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Alex in round 7"}]}, {"id": "s7543", "sid": "7543", "name": "Travis Etienne", "pos": "RB", "team": "Alex", "kept": [2026], "round": 3, "path": [{"d": "2024", "t": "Drafted by Trey in round 2 (not kept)"}, {"d": "2025", "t": "Drafted by Jordan in round 8 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Alex in round 3"}]}, {"id": "s7553", "sid": "7553", "name": "Kyle Pitts", "pos": "TE", "team": "Alex", "kept": [2026], "round": 6, "path": [{"d": "2024", "t": "Drafted by Trey in round 8 (not kept)"}, {"d": "2025", "t": "Drafted by Alex in round 12 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Alex in round 6"}]}, {"id": "s7611", "sid": "7611", "name": "Rhamondre Stevenson", "pos": "RB", "team": "Alex", "kept": [2026], "round": 6, "path": [{"d": "2024", "t": "Drafted by Jordan in round 6 (not kept)"}, {"d": "2025", "t": "Drafted by Nick in round 8 (not kept)"}, {"d": "Aug 22, 2026", "t": "Drafted by Frank in round 6"}, {"d": "Oct 26, 2026", "t": "Traded from Frank to Alex"}]}, {"id": "s1166", "sid": "1166", "name": "Kirk Cousins", "pos": "QB", "team": "Christian", "kept": [2026], "adp": true, "path": [{"d": "2024", "t": "Drafted by Nick in round 14 (not kept)"}, {"d": "Oct 6, 2026", "t": "Picked up by Christian"}]}, {"id": "s13150", "sid": "13150", "name": "Darius Cooper", "pos": "WR", "team": "Christian", "kept": [2026], "adp": true, "path": [{"d": "Oct 15, 2026", "t": "Picked up by Christian"}]}, {"id": "s4039", "sid": "4039", "name": "Cooper Kupp", "pos": "WR", "team": "Christian", "kept": [2026], "adp": true, "path": [{"d": "2024", "t": "Drafted by Alex in round 3 (not kept)"}, {"d": "2025", "t": "Drafted by Anthony in round 9 (not kept)"}, {"d": "Sep 2, 2026", "t": "Picked up by Christian"}]}, {"id": "s8116", "sid": "8116", "name": "Pierre Strong", "pos": "RB", "team": "Christian", "kept": [2026], "adp": true, "path": [{"d": "Oct 21, 2026", "t": "Picked up by Christian"}]}, {"id": "s4943", "sid": "4943", "name": "Sam Darnold", "pos": "QB", "team": "Thomas", "kept": [2026], "adp": true, "path": [{"d": "Sep 30, 2026", "t": "Picked up by Thomas"}]}, {"id": "s8129", "sid": "8129", "name": "Dameon Pierce", "pos": "RB", "team": "Thomas", "kept": [2026], "adp": true, "path": [{"d": "Oct 8, 2026", "t": "Picked up by Mike"}, {"d": "Oct 8, 2026", "t": "Dropped by Mike"}, {"d": "Oct 9, 2026", "t": "Picked up by Mike"}, {"d": "Oct 11, 2026", "t": "Dropped by Mike"}, {"d": "Oct 13, 2026", "t": "Picked up by Thomas"}]}, {"id": "s11625", "sid": "11625", "name": "Adonai Mitchell", "pos": "WR", "team": "Jordan", "kept": [2026], "adp": true, "path": [{"d": "2024", "t": "Drafted by Jordan in round 10 (not kept)"}, {"d": "Sep 22, 2026", "t": "Picked up by Jordan"}]}, {"id": "s11783", "sid": "11783", "name": "Ryan Flournoy", "pos": "WR", "team": "Jordan", "kept": [2026], "adp": true, "path": [{"d": "Sep 27, 2026", "t": "Picked up by Alex"}, {"d": "Sep 30, 2026", "t": "Dropped by Alex"}, {"d": "Oct 4, 2026", "t": "Picked up by Jordan"}]}, {"id": "s4147", "sid": "4147", "name": "Samaje Perine", "pos": "RB", "team": "Jordan", "kept": [2026], "adp": true, "path": [{"d": "Sep 7, 2026", "t": "Picked up by Jordan"}]}, {"id": "s9504", "sid": "9504", "name": "Kayshon Boutte", "pos": "WR", "team": "Jordan", "kept": [2026], "adp": true, "path": [{"d": "Sep 7, 2026", "t": "Picked up by Jordan"}]}, {"id": "s9758", "sid": "9758", "name": "C.J. Stroud", "pos": "QB", "team": "Jordan", "kept": [2026], "adp": true, "path": [{"d": "2024", "t": "Drafted by Jordan in round 4 (not kept)"}, {"d": "2025", "t": "Drafted by Christian in round 11 (not kept)"}, {"d": "Sep 17, 2026", "t": "Picked up by Jordan"}]}, {"id": "s9501", "sid": "9501", "name": "DeMario Douglas", "pos": "WR", "team": "Anthony", "kept": [2026], "adp": true, "path": [{"d": "2024", "t": "Drafted by Alex in round 16 (not kept)"}, {"d": "2025", "t": "Drafted by Dustin in round 13 (not kept)"}, {"d": "Oct 13, 2026", "t": "Picked up by Thomas"}, {"d": "Oct 17, 2026", "t": "Dropped by Thomas"}, {"d": "Oct 20, 2026", "t": "Picked up by Anthony"}]}, {"id": "s11576", "sid": "11576", "name": "Braelon Allen", "pos": "RB", "team": "Frank", "kept": [2026], "adp": true, "path": [{"d": "2025", "t": "Drafted by Chris in round 14 (not kept)"}, {"d": "Aug 30, 2026", "t": "Picked up by Trey"}, {"d": "Sep 6, 2026", "t": "Dropped by Trey"}, {"d": "Sep 24, 2026", "t": "Picked up by Mike"}, {"d": "Sep 27, 2026", "t": "Dropped by Mike"}, {"d": "Sep 29, 2026", "t": "Picked up by Alex"}, {"d": "Oct 26, 2026", "t": "Traded from Alex to Frank"}]}, {"id": "s12495", "sid": "12495", "name": "Ollie Gordon II", "pos": "RB", "team": "Frank", "kept": [2026], "adp": true, "path": [{"d": "Sep 29, 2026", "t": "Picked up by Frank"}]}, {"id": "s12536", "sid": "12536", "name": "Jaylin Noel", "pos": "WR", "team": "Frank", "kept": [2026], "adp": true, "path": [{"d": "Oct 20, 2026", "t": "Picked up by Frank"}]}, {"id": "s13424", "sid": "13424", "name": "Seth McGowan", "pos": "RB", "team": "Frank", "kept": [2026], "adp": true, "path": [{"d": "Sep 20, 2026", "t": "Picked up by Mike"}, {"d": "Sep 20, 2026", "t": "Dropped by Mike"}, {"d": "Oct 1, 2026", "t": "Picked up by Mike"}, {"d": "Oct 4, 2026", "t": "Dropped by Mike"}, {"d": "Oct 16, 2026", "t": "Picked up by Mike"}, {"d": "Oct 18, 2026", "t": "Dropped by Mike"}, {"d": "Oct 22, 2026", "t": "Picked up by Mike"}, {"d": "Oct 23, 2026", "t": "Dropped by Mike"}, {"d": "Oct 23, 2026", "t": "Picked up by Frank"}]}, {"id": "s12487", "sid": "12487", "name": "Terrance Ferguson", "pos": "TE", "team": "Mike", "kept": [2026], "adp": true, "path": [{"d": "Sep 9, 2026", "t": "Picked up by Mike"}, {"d": "Sep 10, 2026", "t": "Dropped by Mike"}, {"d": "Sep 20, 2026", "t": "Picked up by Mike"}, {"d": "Oct 2, 2026", "t": "Dropped by Mike"}, {"d": "Oct 21, 2026", "t": "Picked up by Mike"}]}, {"id": "s13301", "sid": "13301", "name": "Antonio Williams", "pos": "WR", "team": "Mike", "kept": [2026], "adp": true, "path": [{"d": "Sep 17, 2026", "t": "Picked up by Mike"}, {"d": "Sep 20, 2026", "t": "Dropped by Mike"}, {"d": "Oct 3, 2026", "t": "Picked up by Mike"}, {"d": "Oct 4, 2026", "t": "Dropped by Mike"}, {"d": "Oct 7, 2026", "t": "Picked up by Mike"}, {"d": "Oct 16, 2026", "t": "Dropped by Mike"}, {"d": "Oct 21, 2026", "t": "Picked up by Mike"}, {"d": "Oct 22, 2026", "t": "Dropped by Mike"}, {"d": "Oct 25, 2026", "t": "Picked up by Mike"}]}, {"id": "s13337", "sid": "13337", "name": "Emmett Johnson", "pos": "RB", "team": "Mike", "kept": [2026], "adp": true, "path": [{"d": "Sep 13, 2026", "t": "Picked up by Mike"}]}, {"id": "s10235", "sid": "10235", "name": "Roschon Johnson", "pos": "RB", "team": "Chris", "kept": [2026], "adp": true, "path": [{"d": "2025", "t": "Drafted by Matt in round 17 (not kept)"}, {"d": "Sep 4, 2026", "t": "Picked up by Trey"}, {"d": "Sep 6, 2026", "t": "Dropped by Trey"}, {"d": "Oct 16, 2026", "t": "Picked up by Chris"}]}, {"id": "s12469", "sid": "12469", "name": "Dylan Sampson", "pos": "RB", "team": "Chris", "kept": [2026], "adp": true, "path": [{"d": "2025", "t": "Drafted by Dustin in round 12 (not kept)"}, {"d": "Oct 15, 2026", "t": "Picked up by Chris"}]}, {"id": "s13274", "sid": "13274", "name": "Germie Bernard", "pos": "WR", "team": "Chris", "kept": [2026], "adp": true, "path": [{"d": "Sep 30, 2026", "t": "Picked up by Mike"}, {"d": "Oct 1, 2026", "t": "Dropped by Mike"}, {"d": "Oct 13, 2026", "t": "Picked up by Chris"}]}, {"id": "s8122", "sid": "8122", "name": "Zonovan Knight", "pos": "RB", "team": "Chris", "kept": [2026], "adp": true, "path": [{"d": "Oct 22, 2026", "t": "Picked up by Chris"}]}, {"id": "s9482", "sid": "9482", "name": "Michael Mayer", "pos": "TE", "team": "Chris", "kept": [2026], "adp": true, "path": [{"d": "Sep 9, 2026", "t": "Picked up by Jordan"}, {"d": "Sep 22, 2026", "t": "Dropped by Jordan"}, {"d": "Oct 20, 2026", "t": "Picked up by Chris"}]}, {"id": "s11581", "sid": "11581", "name": "MarShawn Lloyd", "pos": "RB", "team": "Matt", "kept": [2026], "adp": true, "path": [{"d": "2024", "t": "Drafted by Christian in round 17 (not kept)"}, {"d": "Aug 26, 2026", "t": "Picked up by Anthony"}, {"d": "Sep 30, 2026", "t": "Dropped by Anthony"}, {"d": "Oct 3, 2026", "t": "Picked up by Matt"}]}, {"id": "s11439", "sid": "11439", "name": "Jaleel McLaughlin", "pos": "RB", "team": "Dustin", "kept": [2026], "adp": true, "path": [{"d": "2024", "t": "Drafted by Mike in round 15 (not kept)"}, {"d": "Oct 14, 2026", "t": "Picked up by Chris"}, {"d": "Oct 15, 2026", "t": "Dropped by Chris"}, {"d": "Oct 18, 2026", "t": "Picked up by Dustin"}]}, {"id": "s12634", "sid": "12634", "name": "Jordan Watkins", "pos": "WR", "team": "Dustin", "kept": [2026], "adp": true, "path": [{"d": "Oct 21, 2026", "t": "Picked up by Dustin"}]}, {"id": "s9757", "sid": "9757", "name": "Kendre Miller", "pos": "RB", "team": "Dustin", "kept": [2026], "adp": true, "path": [{"d": "Sep 29, 2026", "t": "Picked up by Dustin"}]}, {"id": "s4950", "sid": "4950", "name": "Christian Kirk", "pos": "WR", "team": "Nick", "kept": [2026], "adp": true, "path": [{"d": "2024", "t": "Drafted by Frank in round 6 (not kept)"}, {"d": "2025", "t": "Drafted by Christian in round 10 (not kept)"}, {"d": "Oct 24, 2026", "t": "Picked up by Nick"}]}, {"id": "s7600", "sid": "7600", "name": "Pat Freiermuth", "pos": "TE", "team": "Nick", "kept": [2026], "adp": true, "path": [{"d": "2024", "t": "Drafted by Alex in round 14 (not kept)"}, {"d": "Sep 13, 2026", "t": "Picked up by Chris"}, {"d": "Sep 18, 2026", "t": "Dropped by Chris"}, {"d": "Sep 23, 2026", "t": "Picked up by Thomas"}, {"d": "Sep 30, 2026", "t": "Dropped by Thomas"}, {"d": "Oct 13, 2026", "t": "Picked up by Nick"}]}, {"id": "s11834", "sid": "11834", "name": "Devaughn Vele", "pos": "WR", "team": "Trey", "kept": [2026], "adp": true, "path": [{"d": "Sep 6, 2026", "t": "Picked up by Trey"}]}, {"id": "s9228", "sid": "9228", "name": "Bryce Young", "pos": "QB", "team": "Trey", "kept": [2026], "adp": true, "path": [{"d": "2025", "t": "Drafted by Anthony in round 16 (not kept)"}, {"d": "Sep 15, 2026", "t": "Picked up by Trey"}]}, {"id": "s11435", "sid": "11435", "name": "Emanuel Wilson", "pos": "RB", "team": "Alex", "kept": [2026], "adp": true, "path": [{"d": "Sep 24, 2026", "t": "Picked up by Alex"}]}, {"id": "s11637", "sid": "11637", "name": "Keon Coleman", "pos": "WR", "team": "Alex", "kept": [2026], "adp": true, "path": [{"d": "2024", "t": "Drafted by Matt in round 8 (not kept)"}, {"d": "2025", "t": "Drafted by Nick in round 10 (not kept)"}, {"d": "Sep 24, 2026", "t": "Picked up by Alex"}]}, {"id": "s8161", "sid": "8161", "name": "Malik Willis", "pos": "QB", "team": "Alex", "kept": [2026], "adp": true, "path": [{"d": "Oct 21, 2026", "t": "Picked up by Alex"}]}], "info": {"Christian": {"h": "christianmpowell83", "n": "One Hit Wonders"}, "Trey": {"h": "mynameistrey", "n": "III"}, "Alex": {"h": "alexehayes15", "n": "Smelly Arm Pitts"}, "Anthony": {"h": "OGTone5", "n": "OGTone5"}, "Jordan": {"h": "gridironbelle", "n": "CUTE without the CTE"}, "Chris": {"h": "Critzert90", "n": "Chris from a Rose"}, "Mike": {"h": "mikecossa", "n": "Eastwood Eagles"}, "Thomas": {"h": "DingleberryFarmer", "n": "Team DingleberryFarmer"}, "Dustin": {"h": "Alledr3", "n": "The 6 Time"}, "Matt": {"h": "JimSocks35", "n": "Team JimSocks35"}, "Frank": {"h": "Dudemanfrank", "n": "ThunderSheep"}, "Nick": {"h": "nicksfriends", "n": "Tier 5"}}}</script>
+<script id="app-script">
+(function(){
+  "use strict";
+  var SAVED = JSON.parse(document.getElementById("state").textContent);
+  var state = JSON.parse(JSON.stringify(SAVED));
+  var STASH = "keeper-tracker-pending";
+  var POS = ["QB","RB","WR","TE","K"];
+  var view = { q:"", team:"all", status:"all" };
+  var canEdit = false, artifactApi = null, dirty = 0, justStamped = null, readOnlyNotice = false;
+
+  var root = document.getElementById("root");
+  function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];}); }
+  function uid(){ return "p"+Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
+  function short(y){ return "’"+String(y).slice(-2); }
+  function ord(n){ n=+n; var s=(n%100>=11&&n%100<=13)?"th":({1:"st",2:"nd",3:"rd"}[n%10]||"th"); return n+s; }
+  function art(n){ n=+n; return (n===8||n===11||n===18||(n>=80&&n<90))?"an":"a"; }
+
+  function info(p){
+    var used = p.kept.length, left = state.maxYears - used;
+    if (p.round === 1) return {cls:"done", text:"1st Round Pick - Ineligible", left:0};
+    if (left > 1) return {cls:"ok", text:left+" years left", left:left};
+    if (left === 1) return {cls:"last", text:"1 year left", left:1};
+    return {cls:"done", text:"3rd Year Keeper - Ineligible", left:0};
+  }
+
+  function teamList(){
+    var t = state.teams.slice();
+    state.players.forEach(function(p){ if (p.team && t.indexOf(p.team) < 0) t.push(p.team); });
+    t.sort(function(a,b){ return a.localeCompare(b); });
+    if (state.players.some(function(p){ return !p.team; })) t.push("");
+    return t;
+  }
+
+  function render(){
+    var teams = teamList();
+    var q = view.q.trim().toLowerCase();
+    var html = '';
+    html += '<header class="top"><div><h1>'+esc(state.league)+'</h1>'
+         +  '<p class="sub">Keeper eligibility for the <strong>'+esc(state.season+1)+'</strong> season'+(state.updated?' - Last updated '+esc(state.updated):'')+'</p></div>'
+         +  '</header>';
+
+    html += '<details class="rules" open><summary>Keeper rules</summary><ul>'
+         +  '<li>2 players can be kept each year.</li>'
+         +  '<li>3-year max to keep a player, including the first year.</li>'
+         +  '<li>If you add a player mid-season, it’s his ADP minus one round.</li>'
+         +  '<li>If you trade for a player mid-season, it’s whatever round he was drafted in by the original owner.</li>'
+         +  '<li>You can’t keep 1st rounders.</li>'
+         +  '<li>You can’t keep two players at the same position.</li>'
+         +  '<li>A player’s eligibility doesn’t reset when he’s traded.</li>'
+         +  '</ul></details>';
+
+    html += '<div class="tools"><input id="q" type="search" placeholder="Find a player" value="'+esc(view.q)+'" aria-label="Find a player">'
+         +  '<select id="tf" aria-label="Team"><option value="all">All teams</option>'
+         +  teams.map(function(t){ return '<option value="'+esc(t)+'"'+(view.team===t?' selected':'')+'>'+esc(t||"Unassigned")+'</option>'; }).join('')
+         +  '</select><select id="sf" aria-label="Eligibility">'
+         +  [["all","Any eligibility"],["ok","2+ years left"],["last","1 year left"],["done","Returns to pool"]].map(function(o){return '<option value="'+o[0]+'"'+(view.status===o[0]?' selected':'')+'>'+o[1]+'</option>';}).join('')
+         +  '</select>';
+    
+    html += '</div>';
+
+    html += '<div class="legend"><span><span class="box used" style="width:22px;height:18px;font-size:.7rem"></span> season counted</span>'
+         +  '<span><span class="box" style="width:22px;height:18px"></span> year still available</span></div>';
+
+    var any = false;
+    teams.forEach(function(t){
+      if (view.team !== "all" && view.team !== t) return;
+      var ps = state.players.filter(function(p){
+        if ((p.team||"") !== t) return false;
+        if (q && p.name.toLowerCase().indexOf(q) < 0) return false;
+        if (view.status !== "all" && info(p).cls !== view.status) return false;
+        return true;
+      }).sort(function(a,b){ return (a.round||99) - (b.round||99) || a.name.localeCompare(b.name); });
+      if (!ps.length && (q || view.status !== "all" || !canEdit)) return;
+      any = true;
+      html += '<section class="team"><h2>'+esc(t||"Unassigned")+(state.info&&state.info[t]?' - @'+esc(state.info[t].h)+' - '+esc(state.info[t].n):'')+'</h2><ul class="rows">';
+      if (!ps.length) html += '<li class="row"><span class="sub">No keepers yet.</span></li>';
+      ps.forEach(function(p){
+        var i = info(p);
+        var boxes = '';
+        var n = p.round === 1 ? p.kept.length : Math.max(state.maxYears, p.kept.length);
+        for (var k=0;k<n;k++){
+          var y = p.kept[k];
+          var cls = 'box' + (y!=null ? ' used' : '') + (k >= state.maxYears ? ' over' : '') + (justStamped===p.id && k===p.kept.length-1 ? ' just' : '');
+          boxes += '<span class="'+cls+'"'+(y!=null?' title="Counted for '+esc(y)+'"':'')+'>'+(y!=null?short(y):'<span class="future">'+short((p.kept.length?p.kept[p.kept.length-1]:state.season-1)+(k-p.kept.length+1))+'</span>')+'</span>';
+        }
+        html += '<li class="row'+(canEdit?' editing':'')+'"><div class="who"><span class="pos">'+esc(p.pos)+'</span><button type="button" class="pname" data-path="'+esc(p.id)+'">'+esc(p.name)+'</button>'+(i.left>0 && p.round!==1 ? (p.round ? '<span class="cost">Can be kept using '+art(p.round)+' <b>'+ord(p.round)+' round pick</b> in '+esc(state.season+1)+'</span>' : (p.adp ? '<span class="cost">Can be kept using his <b>'+esc(state.season+1)+' ADP minus one round</b></span>' : '')) : '<span class="cost">Can’t be kept in '+esc(state.season+1)+'</span>')+'</div>'
+             +  '<div class="boxes" aria-label="'+p.kept.length+' of '+state.maxYears+' seasons used">'+boxes+'</div>'
+             +  '<span class="status '+i.cls+'">'+i.text+'</span>';
+        if (canEdit){
+          var keptNow = p.kept.indexOf(state.season) >= 0;
+          html += '<div class="acts">'
+               +  (!keptNow && i.left>0 ? '<button class="btn small primary" data-act="keep" data-id="'+p.id+'">Keep for '+esc(state.season)+'</button>' : '')
+               
+               +  '<button class="btn small quiet" data-act="edit" data-id="'+p.id+'">Edit</button></div>';
+        }
+        html += '</li>';
+      });
+      html += '</ul></section>';
+    });
+
+    if (!any){
+      if (!state.players.length && !state.teams.length)
+        html += canEdit
+          ? '<div class="empty"><strong>Set up your league</strong>Add your league’s team names in League settings, then add each keeper and the seasons they’ve been kept.</div>'
+          : '<div class="empty"><strong>No keepers posted yet</strong>The commissioner hasn’t added any players.</div>';
+      else html += '<div class="empty"><strong>No matching players</strong>Try a different name, team or eligibility filter.</div>';
+    }
+
+    html += '<p class="note">A player’s first season on a team fills the first box, and each season they’re kept fills another. When every box is filled, the player goes back into the draft pool.'
+         + (canEdit ? '' : ' Only the commissioner can make changes.') + '</p>';
+
+    root.innerHTML = html;
+    justStamped = null;
+    bind();
+    renderBar();
+  }
+
+  function renderBar(){
+    var bar = document.getElementById("savebar");
+    if (!bar){ bar = document.createElement("div"); bar.id="savebar"; bar.className="savebar"; document.body.appendChild(bar); }
+    bar.hidden = !(canEdit && dirty);
+    bar.innerHTML = '<span>'+dirty+' unpublished change'+(dirty===1?'':'s')+'</span>'
+      + '<button class="btn quiet" id="discard">Discard</button><button class="btn primary" id="publish">Publish to league</button>';
+    document.getElementById("discard").onclick = function(){
+      state = JSON.parse(JSON.stringify(SAVED)); dirty = 0;
+      try{ sessionStorage.removeItem(STASH); }catch(e){}
+      render();
+    };
+    document.getElementById("publish").onclick = publish;
+  }
+
+  function bind(){
+    var q = document.getElementById("q");
+    q.oninput = function(){ view.q = q.value; var pos = q.selectionStart; render(); var n=document.getElementById("q"); n.focus(); try{n.setSelectionRange(pos,pos);}catch(e){} };
+    document.getElementById("tf").onchange = function(e){ view.team = e.target.value; render(); };
+    document.getElementById("sf").onchange = function(e){ view.status = e.target.value; render(); };
+    var add = document.getElementById("add"); if (add) add.onclick = function(){ openPlayer(null); };
+    var st = document.getElementById("settings"); if (st) st.onclick = openSettings;
+    root.querySelectorAll("[data-path]").forEach(function(b){
+      b.onclick = function(){ var p = state.players.find(function(x){ return x.id === b.dataset.path; }); if (p) openPath(p); };
+    });
+    root.querySelectorAll("[data-act]").forEach(function(b){
+      b.onclick = function(){
+        var p = state.players.find(function(x){ return x.id === b.dataset.id; });
+        if (!p) return;
+        if (b.dataset.act === "keep"){ p.kept.push(state.season); p.kept.sort(); justStamped = p.id; change(); }
+        else if (b.dataset.act === "unkeep"){ p.kept = p.kept.filter(function(y){ return y !== state.season; }); change(); }
+        else openPlayer(p);
+      };
+    });
+  }
+
+  function change(){
+    dirty++;
+    try{ sessionStorage.setItem(STASH, JSON.stringify(state)); }catch(e){}
+    render();
+  }
+
+  function parseYears(s){
+    var out = [], bad = false;
+    String(s).split(/[\s,]+/).filter(Boolean).forEach(function(t){
+      var y = parseInt(t,10);
+      if (!/^\d{4}$/.test(t) || y < 1990 || y > 2100) bad = true; else if (out.indexOf(y) < 0) out.push(y);
+    });
+    return bad ? null : out.sort();
+  }
+
+  function dialog(inner, onSubmit){
+    var d = document.createElement("dialog");
+    d.innerHTML = '<form method="dialog">'+inner+'<p class="err" id="err"></p><div class="dlg-acts" id="dacts"></div></form>';
+    document.body.appendChild(d);
+    d.addEventListener("close", function(){ d.remove(); });
+    d.querySelector("form").addEventListener("submit", function(e){
+      if (e.submitter && e.submitter.value === "cancel") return;
+      var msg = onSubmit(d);
+      if (msg){ e.preventDefault(); d.querySelector("#err").textContent = msg; }
+    });
+    d.showModal();
+    return d;
+  }
+
+  function openPlayer(p){
+    var teams = teamList().filter(function(t){ return t; });
+    var d = dialog(
+      '<h3>'+(p?'Edit player':'Add player')+'</h3>'
+      + '<label class="field"><span>Player name</span><input name="pname" required value="'+esc(p?p.name:"")+'"></label>'
+      + '<div class="two"><label class="field"><span>Position</span><select name="pos">'+POS.map(function(x){return '<option'+(p&&p.pos===x?' selected':'')+'>'+x+'</option>';}).join('')+'</select></label>'
+      + '<label class="field"><span>Team</span><select name="team">'+(teams.length?'':'<option value="">Unassigned</option>')+teams.map(function(t){return '<option value="'+esc(t)+'"'+(p&&p.team===t?' selected':'')+'>'+esc(t)+'</option>';}).join('')+'</select></label></div>'
+      + '<label class="field"><span>Seasons counted</span><input name="kept" inputmode="numeric" placeholder="e.g. 2025, 2026" value="'+esc(p?p.kept.join(", "):"")+'"><em>Include the first season they were on the team, plus each season kept.</em></label>'
+      + '<label class="field"><span>Round drafted in '+esc(state.season)+'</span><input name="round" type="number" min="1" max="30" value="'+esc(p&&p.round?p.round:"")+'"><em>The round it costs to keep them next season.</em></label>'
+      + '<label class="check"><input type="checkbox" name="adp"'+(p&&p.adp?' checked':'')+'> Not drafted (keep at next year’s ADP minus one round)</label>',
+      function(d){
+        var f = d.querySelector("form");
+        var name = f.pname.value.trim();
+        if (!name) return "Enter the player’s name.";
+        var kept = parseYears(f.kept.value);
+        if (!kept) return "Seasons counted should be four-digit years, separated by commas.";
+        if (kept.length > state.maxYears) return "That’s more than the "+state.maxYears+"-season maximum.";
+        var rnd = f.round.value.trim() ? parseInt(f.round.value,10) : null;
+        if (rnd !== null && !(rnd >= 1 && rnd <= 30)) return "Enter the draft round as a number from 1 to 30.";
+        var adp = rnd === null && f.adp.checked;
+        if (p){ p.name=name; p.pos=f.pos.value; p.team=f.team.value; p.kept=kept; p.round=rnd; p.adp=adp; }
+        else state.players.push({id:uid(), name:name, pos:f.pos.value, team:f.team.value, kept:kept, round:rnd, adp:adp});
+        change();
+      });
+    var acts = d.querySelector("#dacts");
+    acts.innerHTML = (p?'<button type="button" class="btn danger" id="rm" style="margin-right:auto">Release to pool</button>':'')
+      + '<button class="btn" value="cancel" formnovalidate>Cancel</button><button class="btn primary" value="ok">'+(p?'Save player':'Add player')+'</button>';
+    var rm = d.querySelector("#rm");
+    if (rm) rm.onclick = function(){
+      if (!confirm("Remove "+p.name+" from the keeper list?")) return;
+      state.players = state.players.filter(function(x){ return x.id !== p.id; });
+      d.close(); change();
+    };
+  }
+
+  function openPath(p){
+    var d = document.createElement("dialog");
+    d.className = "pathdlg";
+    var items = (p.path && p.path.length) ? p.path.map(function(e){ return '<li><span class="pd">'+esc(e.d)+'</span><span class="pt">'+esc(e.t)+'</span></li>'; }).join('') : '<li><span class="pt">No history recorded for this player yet.</span></li>';
+    d.innerHTML = '<div class="pathwrap"><h3>'+esc(p.name)+'</h3><p class="sub">'+esc(p.pos)+(p.team?', now with '+esc(p.team):'')+'</p><ol class="path">'+items+'</ol><div class="dlg-acts"><button type="button" class="btn primary">Close</button></div></div>';
+    document.body.appendChild(d);
+    d.addEventListener("close", function(){ d.remove(); });
+    d.addEventListener("click", function(e){ if (e.target === d) d.close(); });
+    d.querySelector(".btn").onclick = function(){ d.close(); };
+    d.showModal();
+  }
+
+  function openSettings(){
+    var d = dialog(
+      '<h3>League settings</h3>'
+      + '<label class="field"><span>League name</span><input name="league" required value="'+esc(state.league)+'"></label>'
+      + '<div class="two"><label class="field"><span>Current keeper season</span><input name="season" inputmode="numeric" value="'+esc(state.season)+'"></label>'
+      + '<label class="field"><span>Max seasons per keeper</span><input name="max" type="number" min="1" max="10" value="'+esc(state.maxYears)+'"></label></div>'
+      + '<label class="field"><span>Teams</span><textarea name="teams" placeholder="One team per line">'+esc(state.teams.join("\n"))+'</textarea><em>Renaming a team here moves its players to Unassigned until you edit them.</em></label>',
+      function(d){
+        var f = d.querySelector("form");
+        var season = parseInt(f.season.value,10), max = parseInt(f.max.value,10);
+        if (!f.league.value.trim()) return "Enter a league name.";
+        if (!(season >= 1990 && season <= 2100)) return "Enter the season as a four-digit year.";
+        if (!(max >= 1 && max <= 10)) return "Max seasons should be between 1 and 10.";
+        var teams = []; f.teams.value.split("\n").map(function(s){return s.trim();}).forEach(function(t){ if (t && teams.indexOf(t)<0) teams.push(t); });
+        state.league = f.league.value.trim(); state.season = season; state.maxYears = max; state.teams = teams;
+        state.players.forEach(function(p){ if (p.team && teams.indexOf(p.team) < 0) p.team = ""; });
+        change();
+      });
+    d.querySelector("#dacts").innerHTML = '<button class="btn" value="cancel" formnovalidate>Cancel</button><button class="btn primary" value="ok">Save settings</button>';
+  }
+
+  function buildPage(s){
+    var json = JSON.stringify(s).replace(/</g,"\\u003c");
+    return '<!doctype html>\n<html lang="en">\n<head>'
+      + '\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n<title>Keeper eligibility</title>'
+      + '\n<link rel="preconnect" href="https://fonts.googleapis.com">\n<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>'
+      + '\n<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">'
+      + '\n<style id="app-style">' + document.getElementById("app-style").textContent + '</style>\n</head>\n<body>'
+      + '\n<div class="wrap" id="root"><p class="sub">Loading keepers…</p></div>'
+      + '\n<script type="application/json" id="state">' + json + '<\/script>'
+      + '\n<script id="app-script">' + document.getElementById("app-script").textContent + '<\/script>\n</body>\n</html>\n';
+  }
+
+  function toast(msg){
+    var t = document.createElement("div"); t.className = "toast"; t.textContent = msg; document.body.appendChild(t);
+    setTimeout(function(){ t.remove(); }, 5000);
+  }
+
+  function publish(){
+    if (!artifactApi) return;
+    var btn = document.getElementById("publish"); btn.disabled = true; btn.textContent = "Publishing…";
+    try{ sessionStorage.setItem(STASH, JSON.stringify(state)); }catch(e){}
+    try{ state.updated = new Date().toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"}); }catch(e){}
+    artifactApi.publish(buildPage(state)).then(function(){
+      try{ sessionStorage.removeItem(STASH); }catch(e){}
+    }).catch(function(err){
+      var code = err && err.code;
+      if (code === "conflict") return; // page reloads to the newer version; stash restores edits
+      if (code === "not_writer" || code === "not_granted" || code === "not_declared" || code === "consent_required" || code === "capability_disabled"){
+        canEdit = false; dirty = 0; try{ sessionStorage.removeItem(STASH); }catch(e){}
+        state = JSON.parse(JSON.stringify(SAVED)); render(); toast("This view is read-only, so changes can’t be published from here.");
+        return;
+      }
+      btn.disabled = false; btn.textContent = "Publish to league";
+      toast(code === "rate_limited" ? "Publishing too quickly. Wait a moment, then publish again." : "Couldn’t publish just now. Your changes are still here; try again.");
+    });
+  }
+
+  render();
+
+  if (window.claude && window.claude.use){
+    Promise.all([window.claude.use("artifact"), window.claude.use("user")]).then(function(r){
+      artifactApi = r[0];
+      var u = r[1];
+      if (!artifactApi || !u) return;
+      return u.canEdit().then(function(ok){
+        if (!ok) return;
+        canEdit = true;
+        try{
+          var pending = sessionStorage.getItem(STASH);
+          if (pending){
+            var ps = JSON.parse(pending);
+            if (JSON.stringify(ps) !== JSON.stringify(SAVED)){ state = ps; dirty = 1; }
+            else sessionStorage.removeItem(STASH);
+          }
+        }catch(e){}
+        render();
+      });
+    }).catch(function(){});
+  }
+})();
+</script>
+</body>
+</html>

@@ -10,7 +10,7 @@
 <style id="app-style">
 :root{
   --bg:#EDF1EB; --surface:#FBFCFA; --ink:#13201A; --muted:#5B6A61; --line:#CCD6CE;
-  --turf:#1E6A44; --turf-ink:#FFFFFF; --stamp:#1E6A44; --gold:#B9820F; --gold-bg:#F6E7C2;
+  --turf:#1E6A44; --turf-ink:#FFFFFF; --stamp:#1E6A44; --gold:#0B7A86; --gold-bg:#D3EEF1;
   --red:#B23A26; --red-bg:#F5DCD5; --box:#E3EAE4;
   --display:"Barlow Condensed","Roboto Condensed","Arial Narrow",sans-serif;
   --body:"Barlow","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
@@ -22,13 +22,13 @@
 @media (prefers-color-scheme:dark){
   :root:not([data-theme="light"]){
     --bg:#0E1611; --surface:#16211A; --ink:#E6EEE8; --muted:#97A79C; --line:#2A3A30;
-    --turf:#3FA570; --turf-ink:#06140C; --stamp:#5CC28C; --gold:#E9B949; --gold-bg:#3A2E10;
+    --turf:#3FA570; --turf-ink:#06140C; --stamp:#5CC28C; --gold:#4FCAD6; --gold-bg:#0E3A3F;
     --red:#EE7A63; --red-bg:#3D1C15; --box:#203027; color-scheme:dark;
   }
 }
 :root[data-theme="dark"]{
   --bg:#0E1611; --surface:#16211A; --ink:#E6EEE8; --muted:#97A79C; --line:#2A3A30;
-  --turf:#3FA570; --turf-ink:#06140C; --stamp:#5CC28C; --gold:#E9B949; --gold-bg:#3A2E10;
+  --turf:#3FA570; --turf-ink:#06140C; --stamp:#5CC28C; --gold:#4FCAD6; --gold-bg:#0E3A3F;
   --red:#EE7A63; --red-bg:#3D1C15; --box:#203027; color-scheme:dark;
 }
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
@@ -50,7 +50,7 @@ h1{font-family:var(--display);font-weight:800;font-size:clamp(2.4rem,7vw,4rem);l
 .tools{display:flex;flex-wrap:wrap;gap:10px;margin:18px 0 8px}
 .tools input,.tools select{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:9px 12px;min-width:0}
 .tools input{flex:1 1 220px}
-.tools select{flex:0 1 auto}
+.tools select{flex:0 1 auto;max-width:240px}
 .btn{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:9px 14px;cursor:pointer;font-weight:600}
 .btn:hover{border-color:var(--ink)}
 .btn.primary{background:var(--turf);color:var(--turf-ink);border-color:var(--turf)}
@@ -64,6 +64,7 @@ h1{font-family:var(--display);font-weight:800;font-size:clamp(2.4rem,7vw,4rem);l
 .rules ul{margin:6px 0 2px;padding-left:20px;font-size:.92rem;line-height:1.5}
 .legend{display:flex;flex-wrap:wrap;gap:16px;color:var(--muted);font-size:.9rem;margin:6px 0 4px}
 .legend span{display:inline-flex;align-items:center;gap:6px}
+.legend .box{display:inline-grid;place-items:center;line-height:1;padding:0;text-align:center}
 
 section.team{margin-top:20px}
 .team h2{font-family:var(--display);font-weight:700;font-size:1.35rem;margin:0 0 4px;display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 0}
@@ -86,9 +87,31 @@ section.team{margin-top:20px}
 .path li::before{content:"";position:absolute;left:-21px;top:5px;width:11px;height:11px;border-radius:50%;background:var(--surface);border:3px solid var(--turf)}
 .path .pd{display:block;font-size:.8rem;color:var(--muted)}
 .path .pt{display:block;font-weight:600}
+.path li{display:grid;grid-template-columns:76px minmax(0,1fr);column-gap:8px;align-items:baseline;padding:0 0 7px 10px}
+.path .pd{font-size:.72rem;white-space:nowrap;line-height:1.35}
+.path .pt{font-size:.9rem;line-height:1.3}
+.path .trlink .trmore{font-size:.72rem;margin-left:4px}
+.path li::before{top:4px}
+.path{margin-top:10px}
+:root{--y24:#2f6db5;--y25:#b0691a;--y26:#7b4bb8;--y24b:var(--y24);--y25b:var(--y25);--y26b:var(--y26)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--y24:#79a8ec;--y25:#e3a452;--y26:#b897ee;--y24b:#2a5c9e;--y25b:#8e5310;--y26b:#62379f}}
+:root[data-theme="dark"]{--y24:#79a8ec;--y25:#e3a452;--y26:#b897ee;--y24b:#2a5c9e;--y25b:#8e5310;--y26b:#62379f}
+.path li::after{content:"";position:absolute;left:-17px;top:0;bottom:0;width:3px;background:var(--yc,transparent)}
+.path li.s2024{--yc:var(--y24)} .path li.s2025{--yc:var(--y25)} .path li.s2026{--yc:var(--y26)}
+.path li.s2024::before,.path li.s2025::before,.path li.s2026::before{border-color:var(--yc);z-index:1}
+.path li .pd{color:var(--yc,var(--muted));font-weight:600}
+.ylg{display:flex;flex-wrap:wrap;gap:6px 14px;margin:8px 0 0;font-size:.78rem;font-weight:600}
+.ylg span{display:inline-flex;align-items:center;gap:5px}
+.ylg span::before{content:"";width:10px;height:10px;border-radius:50%;background:var(--yc)}
+.fdbtn.yb2024{color:var(--y24)} .fdbtn.yb2025{color:var(--y25)} .fdbtn.yb2026{color:var(--y26)}
+.fdbtn.yb2024:hover{border-color:var(--y24)} .fdbtn.yb2025:hover{border-color:var(--y25)} .fdbtn.yb2026:hover{border-color:var(--y26)}
+.box.used.y2024{background:var(--y24b);border-color:var(--y24b)} .box.used.y2025{background:var(--y25b);border-color:var(--y25b)} .box.used.y2026{background:var(--y26b);border-color:var(--y26b)}
+.box.used.y2024,.box.used.y2025,.box.used.y2026{color:#fff}
+.yt.y2024{color:var(--y24)} .yt.y2025{color:var(--y25)} .yt.y2026{color:var(--y26)}
+.ylg .s2024{--yc:var(--y24);color:var(--y24)} .ylg .s2025{--yc:var(--y25);color:var(--y25)} .ylg .s2026{--yc:var(--y26);color:var(--y26)}
 .trlink{background:none;border:0;padding:0;font:inherit;color:inherit;text-align:left;cursor:pointer}
 .trlink .trmore{display:inline-block;margin-left:6px;font-size:.8rem;font-weight:600;color:var(--turf);text-decoration:underline;text-underline-offset:2px}
-.trgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0 6px}
+.trgrid{display:grid;grid-template-columns:1fr;gap:12px;margin:14px 0 6px}
 .trside{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px 12px}
 .trside h4{margin:0 0 6px;font-family:var(--display);font-size:1.15rem}
 .trside ul{margin:0;padding-left:18px;font-weight:600}
@@ -106,6 +129,26 @@ dialog .pathwrap{padding-top:6px}
 .fdbtn{background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:4px 14px;font-family:var(--display);font-weight:700;font-size:.95rem;color:var(--turf);cursor:pointer}
 .fdbtn:hover{border-color:var(--turf)}
 .fdin{margin:10px 0 6px}
+.fdnav .tlbtn{margin-left:auto}
+@media (max-width:640px){ .fdnav:not(.fdin){gap:5px;font-size:.82rem;flex-wrap:nowrap} .fdnav:not(.fdin) span{white-space:nowrap;margin-right:0} .fdnav:not(.fdin) .fdbtn{padding:3px 8px;font-size:.86rem;white-space:nowrap} }
+.tlog{list-style:none;margin:6px 0 4px;padding:0;border-top:1px solid var(--line)}
+.tlog > li{border-bottom:1px solid var(--line)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .status.last{background:#3B3410;color:#F2D24B}}
+:root[data-theme="dark"] .status.last{background:#3B3410;color:#F2D24B}
+.tlog .trside ul{list-style:disc}
+.tlog .trside li{border:0}
+.tlog .tlitem{padding:10px 0 12px}
+.tlog .tlitem .trgrid{margin:6px 0 0}
+.tlog .tld{font-size:.85rem}
+
+.tlrow{display:block;width:100%;text-align:left;background:none;border:0;padding:8px 4px;cursor:pointer;color:inherit;font:inherit}
+.tlrow:hover{background:var(--bg)}
+.tld{display:block;font-size:.75rem;font-weight:700}
+.tlm{display:block;font-family:var(--display);font-weight:700;font-size:1.1rem;margin:1px 0 2px}
+.tlp{display:block;font-size:.85rem;color:var(--muted)}
+.tlp b{color:var(--ink);font-weight:600}
+.tlrow .trmore{display:inline-block;margin-top:3px;font-size:.75rem;font-weight:600;color:var(--turf);text-decoration:underline;text-underline-offset:2px}
+
 .row.fa,.row.fa.editing{grid-template-columns:1fr;grid-template-areas:"name"}
 dialog.fdlg{width:min(620px,96vw)}
 .fdr{margin:16px 0 4px;font-family:var(--display);font-size:1.1rem}
@@ -119,12 +162,14 @@ dialog{max-height:88vh}
 .dlink:hover{text-decoration-color:var(--turf)}
 .dlist .dk{font-size:.72rem;font-weight:700;color:var(--turf);background:var(--box);border-radius:999px;padding:1px 8px}
 .dlist li.hi{background:var(--gold-bg);border-radius:6px}
-.dlist li.hi .dpk,.dlist li.hi .dn{color:var(--ink)}
+.dlist li.hi .dn{color:var(--ink)}
+
+dialog.dy2024 .dpk{color:var(--y24)} dialog.dy2025 .dpk{color:var(--y25)} dialog.dy2026 .dpk{color:var(--y26)}
 @media (max-width:420px){.trgrid{grid-template-columns:1fr}}
 .pos{display:inline-block;font-family:var(--display);font-weight:700;font-size:.85rem;min-width:2.4em;text-align:center;padding:1px 6px;border-radius:4px;background:var(--box);color:var(--muted);margin-right:8px;vertical-align:1px}
 .cost{display:inline;font-size:.82rem;color:var(--muted);margin-left:8px}
 .check{display:flex;gap:8px;align-items:center;margin:-4px 0 14px;font-size:.92rem}
-.cost b{font-family:var(--display);font-weight:700;font-size:.92rem;color:var(--gold)}
+.cost b{font-family:var(--display);font-weight:700;font-size:.92rem;color:var(--turf)}
 
 .box .future{color:var(--muted);opacity:.75;font-weight:600}
 .boxes{display:flex;gap:4px;min-width:110px}
@@ -204,6 +249,43 @@ dialog h3{font-family:var(--display);font-size:1.7rem;margin:0 0 14px}
   .cost b{font-size:.82rem}
   .team h2{font-size:1.3rem}
 }
+.row .status{display:inline-flex;align-items:center;justify-content:center;line-height:1;padding-top:5px;padding-bottom:3px}
+dialog .pathwrap{padding-top:0}
+dialog .pathwrap > h3{margin:2px 0 2px;line-height:1.1}
+dialog .pathwrap > .sub{margin:0 0 4px;font-size:.95rem;line-height:1.3}
+dialog.noback .dlgbar{background:transparent;margin-bottom:-44px;pointer-events:none}
+dialog.noback .dlgbar button{pointer-events:auto}
+dialog.noback .pathwrap{padding-top:14px}
+dialog.noback .pathwrap > h3{padding-right:44px}
+.tgl{background:none;border:1px solid var(--line);border-radius:6px;width:26px;height:26px;margin:0 0 0 8px;vertical-align:middle;cursor:pointer;color:var(--muted);font-size:.85rem;line-height:1;padding:0;flex:0 0 auto;align-self:center}
+.tgl:hover{color:var(--ink);border-color:var(--ink)}
+section.team.shut .rows{display:none}
+section.team.shut{margin-top:8px}
+section.team.shut h2{border-bottom:1px solid var(--line);padding-bottom:6px}
+@media (max-width:640px){ .team h2 .tgl{position:relative;top:-2px} }
+@media (min-width:641px){ .team h2 .tgl{order:5;align-self:center} }
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;margin:8px 0 4px}
+.seg button{background:var(--surface);border:0;padding:5px 14px;font:inherit;font-size:.85rem;font-weight:600;color:var(--muted);cursor:pointer}
+.seg button+button{border-left:1px solid var(--line)}
+.seg button.on{background:var(--turf);color:var(--turf-ink)}
+dialog.fdlg.wide{width:min(1180px,98vw)}
+.board-wrap{overflow-x:auto;margin:8px 0 4px;-webkit-overflow-scrolling:touch}
+.board{border-collapse:separate;border-spacing:3px;table-layout:fixed;width:100%;min-width:1040px}
+.board th{font-family:var(--display);font-size:.8rem;font-weight:700;color:var(--muted);text-align:left;padding:2px 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.board td{height:54px;padding:0;border-radius:6px;vertical-align:top}
+.bcell{display:block;width:100%;height:100%;min-height:54px;background:none;border:0;text-align:left;padding:4px 6px;cursor:pointer;color:#14201a;font:inherit}
+.bcell:not([data-pid]):not([data-ok]){cursor:default}
+.bpk{display:block;font-size:.66rem;font-weight:700;opacity:.75}
+.bk{font-size:.6rem;background:#14201a;color:#fff;border-radius:3px;padding:0 3px;margin-left:2px}
+.bnm{display:block;font-size:.78rem;font-weight:700;line-height:1.15;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bmeta{display:block;font-size:.64rem;font-weight:600;opacity:.8}
+.bp.pQB{background:#F4A3B8} .bp.pRB{background:#8FDDBF} .bp.pWR{background:#8CC6F2} .bp.pTE{background:#F6C27A} .bp.pK{background:#C9B6EE} .bp.pDEF{background:#C7A68C}
+.dbtns{display:inline-flex;gap:6px;pointer-events:auto}
+dialog.hasback .pathwrap > h3{padding-right:118px}
+@media (max-width:640px){ dialog .pathwrap > h3{font-size:1.4rem;padding-top:4px} }
+.dlgic.dback{height:34px;padding:0 10px;font-size:.85rem}
+.bcell{position:relative}
+.barr{position:absolute;right:5px;bottom:3px;font-size:.78rem;font-weight:700;opacity:.55;line-height:1}
 </style>
 </head>
 <body>
@@ -216,7 +298,8 @@ dialog h3{font-family:var(--display);font-size:1.7rem;margin:0 0 14px}
   var state = JSON.parse(JSON.stringify(SAVED));
   var STASH = "keeper-tracker-pending";
   var POS = ["QB","RB","WR","TE","K","DEF"];
-  var view = { q:"", team:"all", status:"all" };
+  var view = { q:"", team:"all", status:"all", collapsed:false };
+  try{ view.collapsed = localStorage.getItem("kt-collapsed") === "1"; }catch(e){}
   var canEdit = false, artifactApi = null, dirty = 0, justStamped = null, readOnlyNotice = false;
 
   var root = document.getElementById("root");
@@ -249,7 +332,7 @@ dialog h3{font-family:var(--display);font-size:1.7rem;margin:0 0 14px}
     html += '<header class="top"><div><h1>'+esc(state.league)+'</h1>'
          +  '<p class="sub">Keeper eligibility for the <strong>'+esc(state.season+1)+'</strong> season'+(state.updated?'<span class="upd"><span class="sep"> - </span>Last updated '+esc(state.updated)+'</span>':'')+'</p></div>'
          +  '</header>';
-    if (state.drafts) html += '<nav class="fdnav"><span>Full drafts</span>'+Object.keys(state.drafts).sort().map(function(y){ return '<button type="button" class="fdbtn" data-fd="'+esc(y)+'">'+esc(y)+'</button>'; }).join('')+'</nav>';
+    if (state.drafts) html += '<nav class="fdnav"><span>Full drafts</span>'+Object.keys(state.drafts).sort().map(function(y){ return '<button type="button" class="fdbtn yb'+esc(y)+'" data-fd="'+esc(y)+'">'+esc(y)+'</button>'; }).join('')+(state.trades?'<button type="button" class="fdbtn tlbtn" data-tl="1">Trade Log</button>':'')+'</nav>';
 
     var wide = true; try{ wide = window.matchMedia("(min-width:641px)").matches; }catch(e){}
     html += '<details class="rules"><summary>Keeper rules</summary><ul>'
@@ -271,8 +354,8 @@ dialog h3{font-family:var(--display);font-size:1.7rem;margin:0 0 14px}
     
     html += '</div>';
 
-    html += '<div class="legend"><span><span class="box used" style="width:22px;height:18px;font-size:.7rem"></span> season counted</span>'
-         +  '<span><span class="box" style="width:22px;height:18px"></span> year still available</span></div>';
+    html += '<div class="legend"><span><span class="box used y2024" style="width:22px;height:18px;font-size:.62rem;border-width:1px">’24</span><span class="box used y2025" style="width:22px;height:18px;font-size:.62rem;border-width:1px">’25</span><span class="box used y2026" style="width:22px;height:18px;font-size:.62rem;border-width:1px">’26</span> season counted</span>'
+         +  '<span><span class="box" style="width:22px;height:18px;font-size:.62rem;border-width:1px"><span class="future">’27</span></span><span class="box" style="width:22px;height:18px;font-size:.62rem;border-width:1px"><span class="future">’28</span></span> season still eligible</span></div>';
 
     var any = false;
     teams.forEach(function(t){
@@ -285,7 +368,8 @@ dialog h3{font-family:var(--display);font-size:1.7rem;margin:0 0 14px}
       }).sort(function(a,b){ return (a.round||99) - (b.round||99) || a.name.localeCompare(b.name); });
       if (!ps.length && (q || view.status !== "all" || !canEdit)) return;
       any = true;
-      html += '<section class="team"><h2><span class="mgr">'+esc(t||"Free agents")+'</span>'+(state.info&&state.info[t]?'<span class="meta"><span class="sep">&nbsp;- </span>@'+esc(state.info[t].h)+' - '+esc(state.info[t].n)+'</span>':'')+'</h2><ul class="rows">';
+      var shut = view.collapsed && !q;
+      html += '<section class="team'+(shut?' shut':'')+'"><h2><span class="mgr">'+esc(t||"Free agents")+'</span><button type="button" class="tgl" data-tgl="1" aria-expanded="'+(shut?'false':'true')+'" aria-label="'+(shut?'Expand':'Collapse')+' all teams">'+(shut?'\u25B8':'\u25BE')+'</button>'+(state.info&&state.info[t]?'<span class="meta"><span class="sep">&nbsp;- </span>@'+esc(state.info[t].h)+' - '+esc(state.info[t].n)+'</span>':'')+'</h2><ul class="rows">';
       if (!ps.length) html += '<li class="row"><span class="sub">No keepers yet.</span></li>';
       ps.forEach(function(p){
         var i = info(p);
@@ -293,10 +377,10 @@ dialog h3{font-family:var(--display);font-size:1.7rem;margin:0 0 14px}
         var n = p.round === 1 ? p.kept.length : Math.max(state.maxYears, p.kept.length);
         for (var k=0;k<n;k++){
           var y = p.kept[k];
-          var cls = 'box' + (y!=null ? ' used' : '') + (k >= state.maxYears ? ' over' : '') + (justStamped===p.id && k===p.kept.length-1 ? ' just' : '');
+          var cls = 'box' + (y!=null ? ' used y'+y : '') + (k >= state.maxYears ? ' over' : '') + (justStamped===p.id && k===p.kept.length-1 ? ' just' : '');
           boxes += '<span class="'+cls+'"'+(y!=null?' title="Counted for '+esc(y)+'"':'')+'>'+(y!=null?short(y):'<span class="future">'+short((p.kept.length?p.kept[p.kept.length-1]:state.season-1)+(k-p.kept.length+1))+'</span>')+'</span>';
         }
-        html += '<li class="row'+(canEdit?' editing':'')+'"><div class="who"><span class="pos">'+esc(p.pos)+'</span><button type="button" class="pname" data-path="'+esc(p.id)+'">'+esc(p.name)+'</button>'+(p.nfl?'<span class="nfl">'+esc(p.nfl)+'</span>':'')+(i.left>0 && p.round!==1 ? (p.round ? '<span class="cost"><b>'+ord(p.round)+' round pick</b> in '+esc(state.season+1)+'</span>' : (p.adp ? '<span class="cost"><b>'+esc(state.season+1)+' ADP minus one round</b></span>' : '')) : '<span class="cost">Can’t be kept in '+esc(state.season+1)+'</span>')+'</div>'
+        html += '<li class="row'+(canEdit?' editing':'')+'"><div class="who"><span class="pos">'+esc(p.pos)+'</span><button type="button" class="pname" data-path="'+esc(p.id)+'">'+esc(p.name)+'</button>'+(p.nfl?'<span class="nfl">'+esc(p.nfl)+'</span>':'')+(i.left>0 && p.round!==1 ? (p.round ? '<span class="cost"><b>'+ord(p.round)+' round pick</b></span>' : (p.adp ? '<span class="cost"><b>'+esc(state.season+1)+' ADP minus one round</b></span>' : '')) : '<span class="cost">Can’t be kept in '+esc(state.season+1)+'</span>')+'</div>'
              +  '<div class="boxes" aria-label="'+p.kept.length+' of '+state.maxYears+' seasons used">'+boxes+'</div>'
              +  '<span class="status '+i.cls+'">'+i.text+'</span>';
         if (canEdit){
@@ -357,6 +441,8 @@ dialog h3{font-family:var(--display);font-size:1.7rem;margin:0 0 14px}
     var add = document.getElementById("add"); if (add) add.onclick = function(){ openPlayer(null); };
     var st = document.getElementById("settings"); if (st) st.onclick = openSettings;
     root.querySelectorAll("[data-fd]").forEach(function(b){ b.onclick = function(){ openFullDraft(b.dataset.fd); }; });
+    root.querySelectorAll("[data-tl]").forEach(function(b){ b.onclick = openTradeLog; });
+    root.querySelectorAll("[data-tgl]").forEach(function(b){ b.onclick = function(){ view.collapsed = !view.collapsed; try{ localStorage.setItem("kt-collapsed", view.collapsed ? "1" : "0"); }catch(e){} var y = b.closest("section").getBoundingClientRect().top; var idx = [].indexOf.call(root.querySelectorAll("section.team"), b.closest("section")); render(); var sec = root.querySelectorAll("section.team")[idx]; if (sec){ if (view.collapsed) window.scrollBy(0, sec.getBoundingClientRect().top - y); else { var tl = root.querySelector(".tools"), off = 8; if (tl && getComputedStyle(tl).position === "sticky") off += tl.getBoundingClientRect().height; window.scrollTo({top: window.scrollY + sec.getBoundingClientRect().top - off, behavior: "smooth"}); } } }; });
     root.querySelectorAll("[data-ok]").forEach(function(b){ b.onclick = function(){ var o = state.others && state.others[b.dataset.ok]; if (o) openPath(o); }; });
     root.querySelectorAll("[data-path]").forEach(function(b){
       b.onclick = function(){ var p = state.players.find(function(x){ return x.id === b.dataset.path; }); if (p) openPath(p); };
@@ -439,12 +525,12 @@ dialog h3{font-family:var(--display);font-size:1.7rem;margin:0 0 14px}
   function openPath(p){
     var d = document.createElement("dialog");
     d.className = "pathdlg";
-    var items = (p.path && p.path.length) ? p.path.map(function(e){ return '<li><span class="pd">'+esc(e.d)+'</span>'+(e.tr&&state.trades&&state.trades[e.tr]?'<button type="button" class="pt trlink" data-tr="'+esc(e.tr)+'">'+esc(e.t)+' <span class="trmore">See full trade</span></button>':ptxt(e))+'</li>'; }).join('') : '<li><span class="pt">No history recorded for this player yet.</span></li>';
-    d.innerHTML = '<div class="pathwrap"><h3>'+esc(p.name)+'</h3><p class="sub">'+esc(p.pos)+(p.nfl?', '+esc(p.nfl):'')+(p.team?', now with '+esc(p.team):', free agent')+'</p><ol class="path">'+items+'</ol><div class="dlg-acts"><button type="button" class="btn primary">Close</button></div></div>';
+    var items = (p.path && p.path.length) ? p.path.map(function(e){ return '<li class="s'+seasonOf(e.d)+'"><span class="pd">'+esc(e.d)+'</span>'+(e.tr&&state.trades&&state.trades[e.tr]?'<button type="button" class="pt trlink" data-tr="'+esc(e.tr)+'">'+esc(e.t)+' <span class="trmore">See full trade</span></button>':ptxt(e))+'</li>'; }).join('') : '<li><span class="pt">No history recorded for this player yet.</span></li>';
+    d.innerHTML = '<div class="pathwrap"><h3>'+esc(p.name)+'</h3><p class="sub">'+esc(p.pos)+(p.nfl?', '+esc(p.nfl):'')+(p.team?', '+esc(p.team):', free agent')+'</p>'+(function(){ var ss = []; (p.path||[]).forEach(function(e){ var y = seasonOf(e.d); if (ss.indexOf(y) < 0) ss.push(y); }); return ss.length > 1 ? '<div class="ylg">'+ss.map(function(y){ return '<span class="s'+y+'">'+y+' season</span>'; }).join('')+'</div>' : ''; })()+'<ol class="path">'+items+'</ol></div>';
     document.body.appendChild(d); decorate(d);
     d.addEventListener("close", function(){ d.remove(); });
     d.addEventListener("click", function(e){ if (e.target === d) d.close(); });
-    d.querySelector(".btn").onclick = function(){ d.close(); };
+    var cb = d.querySelector(".btn"); if (cb) cb.onclick = function(){ d.close(); };
     d.querySelectorAll("[data-tr]").forEach(function(b){ b.onclick = function(){ openTrade(b.dataset.tr); }; });
     d.querySelectorAll("[data-dr]").forEach(function(b){ b.onclick = function(){ openDraft(b.dataset.dr, b.dataset.mgr, p.name); }; });
     d.querySelectorAll(".trside, .dlist").length;
@@ -465,6 +551,12 @@ dialog h3{font-family:var(--display);font-size:1.7rem;margin:0 0 14px}
     if (state.others && state.others[k]) return '<button type="button" class="dlink" data-ok="'+esc(k)+'">'+esc(n)+'</button>';
     return esc(n);
   }
+  function linkAttr(n){
+    var q = state.players.find(function(z){ return nn(z.name) === nn(n); });
+    if (q) return ' data-pid="'+esc(q.id)+'"';
+    var k = nn(n).replace(/[^a-z ]/g,"").replace(/\s+/g," ").trim();
+    return (state.others && state.others[k]) ? ' data-ok="'+esc(k)+'"' : '';
+  }
   function bindNames(d){
     d.querySelectorAll("[data-pid]").forEach(function(b){ b.onclick = function(){ var q = state.players.find(function(z){ return z.id === b.dataset.pid; }); if (q) openPath(q); }; });
     d.querySelectorAll("[data-ok]").forEach(function(b){ b.onclick = function(){ var o = state.others && state.others[b.dataset.ok]; if (o) openPath(o); }; });
@@ -474,16 +566,16 @@ dialog h3{font-family:var(--display);font-size:1.7rem;margin:0 0 14px}
     var list = state.drafts && state.drafts[year] && state.drafts[year][mgr]; if (!list) return;
     var info = state.info && state.info[mgr];
     var rows = list.map(function(x){ var hi = nn(x.n) === nn(name); return '<li class="'+(hi?'hi':'')+'"><span class="dpk">'+esc(x.pk)+'</span><span class="dn">'+dname(x.n)+(x.p?' <span class="trpos">'+esc(x.p)+(x.t&&x.p!=='DEF'?', '+esc(x.t):'')+'</span>':'')+'</span>'+(x.k?'<span class="dk">Keeper</span>':'')+'</li>'; }).join('');
-    var d = document.createElement("dialog");
-    d.innerHTML = '<div class="pathwrap"><h3>'+esc(mgr)+'\u2019s '+esc(year)+' draft</h3><p class="sub">'+(state.teamNames&&state.teamNames[year]&&state.teamNames[year][mgr]?esc(state.teamNames[year][mgr])+', ':(info?esc(info.n)+', ':''))+esc(year==='2026'?'Sleeper':'Yahoo')+'</p>'+(function(){ var ys = Object.keys(state.drafts).sort().filter(function(y){ return y !== year && state.drafts[y][mgr]; }); return ys.length ? '<div class="fdnav fdin"><span>'+esc(mgr)+'\u2019s other drafts</span>'+ys.map(function(y){ return '<button type="button" class="fdbtn" data-mdo="'+esc(y)+'">'+esc(y)+'</button>'; }).join('')+'</div>' : ''; })()+'<button type="button" class="trlink fdlink"><span class="trmore" style="margin-left:0">See the full '+esc(year)+' draft</span></button><ol class="dlist">'+rows+'</ol><p class="trnote">NFL teams as of the draft.</p><div class="dlg-acts"><button type="button" class="btn primary">Close</button></div></div>';
+    var d = document.createElement("dialog"); d.classList.add("dy"+year); d.classList.add("mdlg");
+    d.innerHTML = '<div class="pathwrap"><h3>'+esc(mgr)+'\u2019s <span class="yt y'+esc(year)+'">'+esc(year)+'</span> Draft</h3><p class="sub">'+(state.teamNames&&state.teamNames[year]&&state.teamNames[year][mgr]?esc(state.teamNames[year][mgr])+', ':(info?esc(info.n)+', ':''))+esc(year==='2026'?'Sleeper':'Yahoo')+'</p>'+(function(){ var ys = Object.keys(state.drafts).sort().filter(function(y){ return y !== year && state.drafts[y][mgr]; }); return ys.length ? '<div class="fdnav fdin"><span>'+esc(mgr)+'\u2019s other drafts</span>'+ys.map(function(y){ return '<button type="button" class="fdbtn yb'+esc(y)+'" data-mdo="'+esc(y)+'">'+esc(y)+'</button>'; }).join('')+'</div>' : ''; })()+'<button type="button" class="trlink fdlink"><span class="trmore" style="margin-left:0">See the full '+esc(year)+' draft</span></button><ol class="dlist">'+rows+'</ol></div>';
     document.body.appendChild(d); decorate(d);
     d.addEventListener("close", function(){ d.remove(); });
     d.addEventListener("click", function(e){ if (e.target === d) d.close(); });
-    d.querySelector(".btn").onclick = function(){ d.close(); };
+    var cb = d.querySelector(".btn"); if (cb) cb.onclick = function(){ d.close(); };
     d.showModal();
     bindNames(d);
     var fl = d.querySelector(".fdlink"); if (fl) fl.onclick = function(){ openFullDraft(year); };
-    d.querySelectorAll("[data-mdo]").forEach(function(b){ b.onclick = function(){ var y = b.dataset.mdo; d.close(); openDraft(y, mgr, name); }; });
+    d.querySelectorAll("[data-mdo]").forEach(function(b){ b.onclick = function(){ var y = b.dataset.mdo; openDraft(y, mgr, name); }; });
     var h = d.querySelector("li.hi"); if (h && h.scrollIntoView) h.scrollIntoView({block:"center"});
   }
 
@@ -505,39 +597,79 @@ dialog h3{font-family:var(--display);font-size:1.7rem;margin:0 0 14px}
       var tn = state.teamNames && state.teamNames[year] && state.teamNames[year][mgr] ? state.teamNames[year][mgr] : (state.info && state.info[mgr] ? state.info[mgr].n : '');
       return '<h4 class="fdr">'+esc(mgr)+(tn?' <span class="trpos">'+esc(tn)+'</span>':'')+'</h4><ol class="dlist">'+picks.filter(function(o){ return o.mgr === mgr; }).map(function(o){ return '<li><span class="dpk">'+esc(o.x.pk)+'</span><span class="dn">'+dname(o.x.n)+(o.x.p?' <span class="trpos">'+esc(o.x.p)+(o.x.t&&o.x.p!=="DEF"?', '+esc(o.x.t):'')+'</span>':'')+'</span>'+(o.x.k?'<span class="dk">Keeper</span>':'')+'</li>'; }).join('')+'</ol>';
     }).join('');
+    var maxR = 0; picks.forEach(function(o){ var r = +o.x.pk.split(".")[0]; if (r > maxR) maxR = r; });
+    var bhtml = '<div class="board-wrap"><table class="board"><thead><tr>'+mgrs.map(function(m){ return '<th>'+esc(m)+'</th>'; }).join('')+'</tr></thead><tbody>';
+    for (var r=1; r<=maxR; r++){
+      bhtml += '<tr>'+mgrs.map(function(m, ci){
+        var x = (all[m]||[]).filter(function(z){ return +z.pk.split(".")[0] === r; })[0];
+        if (!x) return '<td></td>';
+        var parts = x.n.split(" "), sn = x.p === "DEF" ? parts[parts.length-1] : (parts.length > 1 ? parts[0].charAt(0)+'. '+parts.slice(1).join(' ') : x.n);
+        return '<td class="bp p'+esc(x.p||'')+'"><button type="button" class="bcell"'+linkAttr(x.n)+'><span class="bpk">'+esc(x.pk)+(x.k?' <b class="bk">K</b>':'')+'</span><span class="bnm">'+esc(sn)+'</span><span class="bmeta">'+esc(x.p||'')+(x.t&&x.p!=="DEF"?' - '+esc(x.t):'')+'</span><span class="barr">'+(r%2===1 ? (ci===mgrs.length-1?'\u2193':'\u2192') : (ci===0?'\u2193':'\u2190'))+'</span></button></td>';
+      }).join('')+'</tr>';
+    }
+    bhtml += '</tbody></table></div>';
     var d = document.createElement("dialog");
-    d.className = "fdlg";
-    d.innerHTML = '<div class="pathwrap"><h3>'+esc(year)+' draft</h3><p class="sub">'+esc(year==='2026'?'Sleeper':'Yahoo')+', '+esc(year==='2024'?'Sep 1, 2024':year==='2025'?'Aug 20, 2025':'Aug 22, 2026')+'</p><div class="fdnav fdin"><span>Other drafts</span>'+Object.keys(state.drafts).sort().filter(function(y){ return y !== year; }).map(function(y){ return '<button type="button" class="fdbtn" data-fdo="'+esc(y)+'">'+esc(y)+'</button>'; }).join('')+'</div><button type="button" class="trlink fdtog"><span class="trmore" style="margin-left:0">View by team</span></button><div class="fdround">'+html+'</div><div class="fdteam" hidden>'+thtml+'</div><p class="trnote">NFL teams as of the draft.</p><div class="dlg-acts"><button type="button" class="btn primary">Close</button></div></div>';
+    d.className = "fdlg dy"+year;
+    d.innerHTML = '<div class="pathwrap"><h3><span class="yt y'+esc(year)+'">'+esc(year)+'</span> Draft</h3><p class="sub">'+esc(year==='2026'?'Sleeper':'Yahoo')+', '+esc(year==='2024'?'Sep 1, 2024':year==='2025'?'Aug 20, 2025':'Aug 22, 2026')+'</p><div class="fdnav fdin"><span>Other drafts</span>'+Object.keys(state.drafts).sort().filter(function(y){ return y !== year; }).map(function(y){ return '<button type="button" class="fdbtn yb'+esc(y)+'" data-fdo="'+esc(y)+'">'+esc(y)+'</button>'; }).join('')+'</div><div class="seg"><button type="button" class="on" data-v="round">By round</button><button type="button" data-v="team">By team</button><button type="button" data-v="board">Board</button></div><div class="fdround">'+html+'</div><div class="fdteam" hidden>'+thtml+'</div><div class="fdboard" hidden>'+bhtml+'</div></div>';
     document.body.appendChild(d); decorate(d);
     d.addEventListener("close", function(){ d.remove(); });
     d.addEventListener("click", function(e){ if (e.target === d) d.close(); });
-    d.querySelector(".btn").onclick = function(){ d.close(); };
+    var cb = d.querySelector(".btn"); if (cb) cb.onclick = function(){ d.close(); };
     bindNames(d);
-    var tg = d.querySelector(".fdtog");
-    d.querySelectorAll("[data-fdo]").forEach(function(b){ b.onclick = function(){ var y = b.dataset.fdo; d.close(); openFullDraft(y); }; });
-    tg.onclick = function(){ var a = d.querySelector(".fdround"), b = d.querySelector(".fdteam"); var toTeam = !a.hidden; a.hidden = toTeam; b.hidden = !toTeam; tg.querySelector(".trmore").textContent = toTeam ? "View by round" : "View by team"; d.querySelector(".pathwrap").scrollTop = 0; d.scrollTop = 0; };
+    d.querySelectorAll("[data-fdo]").forEach(function(b){ b.onclick = function(){ var y = b.dataset.fdo; openFullDraft(y); }; });
+    d.querySelectorAll(".seg [data-v]").forEach(function(b){ b.onclick = function(){
+      var v = b.dataset.v;
+      d.querySelectorAll(".seg [data-v]").forEach(function(x){ x.classList.toggle("on", x === b); });
+      d.querySelector(".fdround").hidden = v !== "round"; d.querySelector(".fdteam").hidden = v !== "team"; d.querySelector(".fdboard").hidden = v !== "board";
+      d.classList.toggle("wide", v === "board"); d.scrollTop = 0;
+    }; });
     d.showModal();
   }
 
+  function seasonOf(d){
+    var t = Date.parse(d); if (isNaN(t)) return '';
+    if (t < Date.parse('Aug 20, 2025')) return '2024';
+    if (t < Date.parse('Aug 22, 2026')) return '2025';
+    return '2026';
+  }
   function decorate(d){
     var below = document.querySelectorAll("dialog[open]").length > 0;
     var bar = document.createElement("div"); bar.className = "dlgbar";
-    bar.innerHTML = (below ? '<button type="button" class="dlgic dback" aria-label="Back">\u2039 Back</button>' : '<span></span>') + '<button type="button" class="dlgic dx" aria-label="Close all">\u00d7</button>';
+    bar.innerHTML = '<span></span><span class="dbtns">' + (below ? '<button type="button" class="dlgic dback" aria-label="Back">\u2039 Back</button>' : '') + '<button type="button" class="dlgic dx" aria-label="Close all">\u00d7</button></span>';
     d.insertBefore(bar, d.firstChild);
+    d.classList.add("noback"); if (below) d.classList.add("hasback");
     if (below) bar.querySelector(".dback").onclick = function(){ d.close(); };
     bar.querySelector(".dx").onclick = function(){ document.querySelectorAll("dialog[open]").forEach(function(x){ x.close(); }); };
+  }
+
+  function openTradeLog(){
+    var ids = Object.keys(state.trades||{}).sort(function(a,b){ return Date.parse(state.trades[b].d) - Date.parse(state.trades[a].d); });
+    var html = '', cur = null;
+    ids.forEach(function(id){
+      var t = state.trades[id], y = seasonOf(t.d);
+      if (y !== cur){ if (cur !== null) html += '</ol>'; html += '<h4 class="fdr"><span class="yt y'+y+'">'+y+' season</span></h4><ol class="tlog">'; cur = y; }
+      html += '<li class="tlitem"><div class="tld yt y'+y+'">'+esc(t.d)+'</div><div class="trgrid">'+t.sides.map(function(s){ return '<div class="trside"><h4>'+esc(s.to)+' received</h4><ul>'+s.players.map(function(n){ return typeof n === "string" ? '<li>'+dname(n)+'</li>' : '<li>'+dname(n.n)+' <span class="trpos">'+esc(n.p)+', '+esc(n.t)+'</span></li>'; }).join('')+'</ul><p class="trfrom">from '+esc(s.from)+'</p></div>'; }).join('')+'</div></li>';
+    });
+    if (cur !== null) html += '</ol>';
+    var d = document.createElement("dialog");
+    d.innerHTML = '<div class="pathwrap"><h3>Trade Log</h3><p class="sub">'+ids.length+' trades, newest first</p>'+html+'</div>';
+    document.body.appendChild(d); decorate(d);
+    d.addEventListener("close", function(){ d.remove(); });
+    d.addEventListener("click", function(e){ if (e.target === d) d.close(); });
+    bindNames(d);
+    d.showModal();
   }
 
   function openTrade(id){
     var t = state.trades && state.trades[id]; if (!t) return;
     var d = document.createElement("dialog");
     var sides = t.sides.map(function(s){ return '<div class="trside"><h4>'+esc(s.to)+' received</h4><ul>'+s.players.map(function(n){ return typeof n === "string" ? '<li>'+esc(n)+'</li>' : '<li>'+dname(n.n)+' <span class="trpos">'+esc(n.p)+', '+esc(n.t)+'</span></li>'; }).join('')+'</ul><p class="trfrom">from '+esc(s.from)+'</p></div>'; }).join('');
-    d.innerHTML = '<div class="pathwrap"><h3>Trade</h3><p class="sub">'+esc(t.d)+'</p><div class="trgrid">'+sides+'</div><p class="trnote">NFL teams as of the trade.</p><div class="dlg-acts"><button type="button" class="btn primary">Close</button></div></div>';
+    d.innerHTML = '<div class="pathwrap"><h3>Trade</h3><p class="sub">'+esc(t.d)+'</p><div class="trgrid">'+sides+'</div><p class="trnote">NFL teams as of the trade.</p></div>';
     document.body.appendChild(d); decorate(d);
     bindNames(d);
     d.addEventListener("close", function(){ d.remove(); });
     d.addEventListener("click", function(e){ if (e.target === d) d.close(); });
-    d.querySelector(".btn").onclick = function(){ d.close(); };
+    var cb = d.querySelector(".btn"); if (cb) cb.onclick = function(){ d.close(); };
     d.showModal();
   }
 

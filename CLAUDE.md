@@ -54,7 +54,7 @@ All data lives in one JSON block in `index.html`: `<script type="application/jso
 - `trades{key}`: key is the date, with " (2)", " (3)" for extra trades that day. `{d, sides:[{from, to, players:[{n,p,t} or "2027 5th round pick (Anthony’s)"]}]}`.
 - `drafts[year][mgr]`: `[{n, p, t, pk:"R.PP", k?:true}]`.
 - `picks`: `{year: 2027, rounds: 15, traded:[{r, orig, owner, d, tr}]}`.
-- `weekly`: the collapsed "This week" box: `{range, trades:[tradeKeys], adds:[[mgr,[names]]], drops:[[mgr,[names]]], names:[[mgr, old, new]]}`.
+- No `weekly` key. Michael removed the "This week" box; never add `weekly` back (the page hides the box when it is missing).
 
 ## Weekly update (when Michael says "update")
 1. Pull transactions from `https://api.sleeper.app/v1/league/1370092323513319424/transactions/{week}` for the recent weeks. Include everything newer than the last update. Waiver claims can carry an earlier timestamp than when they processed, so also check recent weeks for completed moves you haven't recorded.
@@ -63,7 +63,7 @@ All data lives in one JSON block in `index.html`: `<script type="application/jso
 4. Get names for new Sleeper IDs from `https://api.sleeper.app/v1/players/nfl` (large file; look up only what's needed).
 5. For each move, append to the player's `path`. Player leaves every roster: move him from `players` to `others`. Player joins via waivers/free agency: `kept:[2026]`, `round:null`, `adp:true`. Player joins via trade: change `team` only, eligibility stays.
 6. Add new trades to `trades` (and any traded picks to `picks.traded`) and add a "Traded from X to Y" entry with `tr` to each player.
-7. Rebuild `weekly` with net changes since the last update (ignore players added and dropped within the window) and set `updated` to today.
+7. Set `updated` to today. Do not add a `weekly` box.
 
 ## Style decisions already made (keep them)
 - Season colors: 2024 blue, 2025 orange, 2026 purple (darker shades for filled boxes in dark mode). Links and "2 years left" are green; "1 year left" is teal (yellow in dark mode); ineligible is red.

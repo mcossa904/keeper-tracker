@@ -185,6 +185,9 @@ dialog.dy2024 .dpk{color:var(--y24)} dialog.dy2025 .dpk{color:var(--y25)} dialog
 .status.ok{color:var(--turf)}
 .status.last{background:var(--gold-bg);color:var(--gold)}
 .status.done{background:var(--red-bg);color:var(--red)}
+.status.done.nopick{background:#FBF0C2;color:#8A6500}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .status.done.nopick{background:#3B3410;color:#F2D24B}}
+:root[data-theme="dark"] .status.done.nopick{background:#3B3410;color:#F2D24B}
 .acts{display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap}
 
 .empty{margin-top:40px;padding:28px;border:2px dashed var(--line);border-radius:8px;text-align:center;color:var(--muted)}
@@ -371,7 +374,7 @@ dialog{overscroll-behavior:contain}
   function info(p){
     var used = p.kept.length, left = state.maxYears - used;
     if (p.round === 1) return {cls:"done", text:"Ineligible - 1st Rd", left:0};
-    if (left > 0 && p.team && p.round && state.picks && !hasPick(p.team, p.round)) return {cls:"done", text:"Ineligible - No "+ord(p.round), left:0, nopick:true, why:"No "+state.picks.year+" "+ord(p.round)+" round pick, so he can\u2019t be kept"};
+    if (left > 0 && p.team && p.round && state.picks && !hasPick(p.team, p.round)) return {cls:"done", text:"Ineligible for "+p.team+" - No "+ord(p.round), left:0, nopick:true, why:"No "+state.picks.year+" "+ord(p.round)+" round pick, so he can\u2019t be kept"};
     if (left > 1) return {cls:"ok", text:left+" years left", left:left};
     if (left === 1) return {cls:"last", text:"1 year left", left:1};
     return {cls:"done", text:"Ineligible - 3rd Yr", left:0};
@@ -455,7 +458,7 @@ dialog{overscroll-behavior:contain}
         }
         html += '<li class="row'+(canEdit?' editing':'')+'"><div class="who"><span class="pos">'+esc(p.pos)+'</span><button type="button" class="pname" data-path="'+esc(p.id)+'">'+esc(p.name)+'</button>'+(p.nfl?'<span class="nfl">'+esc(p.nfl)+'</span>':'')+(i.left>0 && p.round!==1 ? (p.round ? '<span class="cost"><b>'+ord(p.round)+' round pick</b></span>' : (p.adp ? '<span class="cost"><b>'+esc(state.season+1)+' ADP minus one round</b></span>' : '')) : '<span class="cost">'+(i.nopick ? 'No '+esc(state.picks.year)+' '+ord(p.round)+' round pick' : 'Can’t be kept in '+esc(state.season+1))+'</span>')+'</div>'
              +  '<div class="boxes" aria-label="'+p.kept.length+' of '+state.maxYears+' seasons used">'+boxes+'</div>'
-             +  '<span class="status '+i.cls+'">'+i.text+'</span>';
+             +  '<span class="status '+i.cls+(i.nopick?' nopick':'')+'">'+esc(i.text)+'</span>';
         if (canEdit){
           var keptNow = p.kept.indexOf(state.season) >= 0;
           html += '<div class="acts">'
@@ -817,7 +820,7 @@ dialog{overscroll-behavior:contain}
       var list = '<h4 class="fdr">Eligible players</h4><ul class="pllist">'+ps.map(function(p){ var on = picked.indexOf(p.id) >= 0, dis = !on && picked.length >= 2; return '<li><label class="'+(dis?'dis':'')+'"><input type="checkbox" data-pp="'+esc(p.id)+'"'+(on?' checked':'')+(dis?' disabled':'')+'><span class="pos">'+esc(p.pos)+'</span><span class="pln">'+esc(p.name)+'</span><span class="plc">'+esc(costOf(p))+'</span><span class="status '+info(p).cls+'">'+esc(info(p).text)+'</span></label></li>'; }).join('')+'</ul>';
       var inel = state.players.filter(function(p){ return p.team === team && info(p).cls === "done"; }).sort(function(a,b){ return (a.round||99)-(b.round||99) || a.name.localeCompare(b.name); });
       var why = function(p){ if (info(p).why) return info(p).why; return p.round === 1 ? "Drafted in the 1st round, so he can\u2019t be kept" : "Already counted "+p.kept.length+" seasons, the max, so he returns to the draft pool"; };
-      var ilist = inel.length ? '<h4 class="fdr">Not eligible</h4><ul class="pllist">'+inel.map(function(p){ return '<li><label class="dis"><input type="checkbox" disabled><span class="pos">'+esc(p.pos)+'</span><span class="pln">'+esc(p.name)+'</span><span class="plc">'+esc(why(p))+'</span><span class="status done">'+esc(info(p).text)+'</span></label></li>'; }).join('')+'</ul>' : '';
+      var ilist = inel.length ? '<h4 class="fdr">Not eligible</h4><ul class="pllist">'+inel.map(function(p){ return '<li><label class="dis"><input type="checkbox" disabled><span class="pos">'+esc(p.pos)+'</span><span class="pln">'+esc(p.name)+'</span><span class="plc">'+esc(why(p))+'</span><span class="status done'+(info(p).nopick?' nopick':'')+'">'+esc(info(p).text)+'</span></label></li>'; }).join('')+'</ul>' : '';
       d.querySelector(".plbody").innerHTML = sum + list + ilist;
       d.querySelectorAll("[data-pp]").forEach(function(cb){ cb.onchange = function(){
         var id = cb.dataset.pp, cur = plan[team] || [];

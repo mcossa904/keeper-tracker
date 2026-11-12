@@ -66,7 +66,7 @@ All data lives in one JSON block in `index.html`: `<script type="application/jso
 7. Set `updated` to today. Do not add a `weekly` box.
 
 ## Style decisions already made (keep them)
-- Season colors: 2024 blue, 2025 orange, 2026 purple (darker shades for filled boxes in dark mode). Links and "2 years left" are green; "1 year left" is teal (yellow in dark mode); ineligible is red.
+- Season colors: 2024 blue, 2025 orange, 2026 purple (darker shades for filled boxes in dark mode). Links and "2 years left" are green; "1 year left" is teal (yellow in dark mode); ineligible is red, except "Ineligible for <manager> - No <round>" (the manager lacks that 2027 pick), which is yellow.
 - Teams start collapsed. Pop-ups lock background scrolling, have Back and × in the top right, and no Close button at the bottom.
 - Draft and window titles capitalize "Draft" and "Keepers." Text says "with pick," "did not keep," "season still eligible."
 - Mobile first. Most of the league uses phones; tables and rows must fit about 390px wide without sideways scrolling.

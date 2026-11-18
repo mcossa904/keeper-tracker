@@ -337,6 +337,9 @@ dialog{overscroll-behavior:contain}
 .pkteam{border-top:1px solid var(--line);padding-top:6px;margin-top:6px}
 .pkteam h4{margin:2px 0 4px;font-family:var(--display);font-size:1.1rem}
 .pkteam .mgrl{cursor:pointer;text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:3px}
+.tpk{margin:14px 0 4px;border:1px solid var(--line);border-radius:6px;padding:8px 12px;background:var(--surface)}
+.tpk summary{font-family:var(--display);font-weight:700;font-size:1.05rem;cursor:pointer}
+.tpk[open] summary{margin-bottom:6px}
 </style>
 </head>
 <body>
@@ -848,7 +851,7 @@ dialog{overscroll-behavior:contain}
     var P = state.picks; if (!P) return;
     var teams = Object.keys(state.info || {}).sort(function(a,b){ return a.localeCompare(b); });
     var tl = (P.traded||[]).filter(function(x){ return x.owner !== x.orig; });
-    var log = tl.length ? '<h4 class="fdr">Traded picks</h4><ul class="mkl">'+tl.map(function(x){ return '<li><b>'+ord(x.r)+' round</b> (from '+esc(x.orig)+') now owned by <b>'+esc(x.owner)+'</b>'+(x.tr&&state.trades&&state.trades[x.tr]?' – <button type="button" class="wktr" data-tr="'+esc(x.tr)+'">'+esc(x.d)+' trade</button>':'')+'</li>'; }).join('')+'</ul>' : '<p class="trnote">No picks have been traded yet.</p>';
+    var log = tl.length ? '<details class="tpk"><summary>Traded picks <span class="trpos">'+tl.length+'</span></summary><ul class="mkl">'+tl.map(function(x){ return '<li><b>'+ord(x.r)+' round</b> (from '+esc(x.orig)+') now owned by <b>'+esc(x.owner)+'</b>'+(x.tr&&state.trades&&state.trades[x.tr]?' – <button type="button" class="wktr" data-tr="'+esc(x.tr)+'">'+esc(x.d)+' trade</button>':'')+'</li>'; }).join('')+'</ul></details>' : '<p class="trnote">No picks have been traded yet.</p>';
     var body = teams.map(function(t){ var ps = picksOf(t); return '<div class="pkteam"><h4><span class="mgrl" data-mgrp="'+esc(t)+'">'+esc(t)+'</span> <span class="trpos">'+ps.length+' picks</span></h4>'+pickBlock(t).replace(/^<h4[^]*?<\/h4>/,'')+'</div>'; }).join('');
     var d = document.createElement("dialog"); d.className = "fdlg";
     d.innerHTML = '<div class="pathwrap"><h3>'+esc(P.year)+' Draft Picks</h3><p class="sub">Who owns each round. You can’t keep a player without that round’s pick.</p><div class="pklg"><span class="pk">Own pick</span><span class="pk pkin">Acquired</span><span class="pk pkno">Traded away</span></div>'+log+body+'</div>';

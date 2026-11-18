@@ -330,7 +330,8 @@ dialog{overscroll-behavior:contain}
 .pk small{font-family:var(--body);font-weight:600;font-size:.62rem;color:var(--muted)}
 .pk.pkin{background:var(--gold-bg);border-color:var(--gold);color:var(--gold);cursor:pointer;font:inherit;font-family:var(--display);font-weight:700;font-size:.9rem}
 .pk.pkin small{color:var(--gold)}
-.pk.pkno{background:transparent;border-style:dashed;color:var(--red);text-decoration:line-through}
+.pk.pkno{background:transparent;border-style:dashed;color:var(--red)}
+.pk.pkno .pkn{text-decoration:line-through}
 .pk.pkno small{text-decoration:none;color:var(--red)}
 .pklg{display:flex;gap:8px;margin:8px 0 2px}
 .pklg .pk{min-width:0;font-size:.75rem;padding:2px 8px}
@@ -841,7 +842,7 @@ dialog{overscroll-behavior:contain}
     var ps = picksOf(mgr), chips = '';
     for (var r=1;r<=P.rounds;r++){
       var mine = ps.filter(function(x){ return x.r === r; });
-      if (!mine.length){ var gone = (P.traded||[]).filter(function(x){ return x.r === r && x.orig === mgr; })[0]; chips += '<span class="pk pkno" title="Traded to '+esc(gone?gone.owner:'')+'">'+ord(r)+'<small>to '+esc(gone?gone.owner:'?')+'</small></span>'; }
+      if (!mine.length){ var gone = (P.traded||[]).filter(function(x){ return x.r === r && x.orig === mgr; })[0]; chips += '<span class="pk pkno" title="Traded to '+esc(gone?gone.owner:'')+'"><span class="pkn">'+ord(r)+'</span><small>to '+esc(gone?gone.owner:'?')+'</small></span>'; }
       mine.forEach(function(x){ chips += x.t ? '<button type="button" class="pk pkin" data-tr="'+esc(x.t.tr||'')+'">'+ord(r)+'<small>from '+esc(x.orig)+'</small></button>' : '<span class="pk">'+ord(r)+'</span>'; });
     }
     return '<h4 class="fdr">'+esc(P.year)+' draft picks <span class="trpos">'+ps.length+' picks</span></h4><div class="pks">'+chips+'</div>';
@@ -854,7 +855,7 @@ dialog{overscroll-behavior:contain}
     var log = tl.length ? '<details class="tpk"><summary>Traded picks <span class="trpos">'+tl.length+'</span></summary><ul class="mkl">'+tl.map(function(x){ return '<li><b>'+ord(x.r)+' round</b> (from '+esc(x.orig)+') now owned by <b>'+esc(x.owner)+'</b>'+(x.tr&&state.trades&&state.trades[x.tr]?' – <button type="button" class="wktr" data-tr="'+esc(x.tr)+'">'+esc(x.d)+' trade</button>':'')+'</li>'; }).join('')+'</ul></details>' : '<p class="trnote">No picks have been traded yet.</p>';
     var body = teams.map(function(t){ var ps = picksOf(t); return '<div class="pkteam"><h4><span class="mgrl" data-mgrp="'+esc(t)+'">'+esc(t)+'</span> <span class="trpos">'+ps.length+' picks</span></h4>'+pickBlock(t).replace(/^<h4[^]*?<\/h4>/,'')+'</div>'; }).join('');
     var d = document.createElement("dialog"); d.className = "fdlg";
-    d.innerHTML = '<div class="pathwrap"><h3>'+esc(P.year)+' Draft Picks</h3><p class="sub">Who owns each round. You can’t keep a player without that round’s pick.</p><div class="pklg"><span class="pk">Own pick</span><span class="pk pkin">Acquired</span><span class="pk pkno">Traded away</span></div>'+log+body+'</div>';
+    d.innerHTML = '<div class="pathwrap"><h3>'+esc(P.year)+' Draft Picks</h3><p class="sub">Who owns each round. You can’t keep a player without that round’s pick.</p><div class="pklg"><span class="pk">Own pick</span><span class="pk pkin">Acquired</span><span class="pk pkno"><span class="pkn">Traded away</span></span></div>'+log+body+'</div>';
     document.body.appendChild(d); decorate(d);
     d.addEventListener("close", function(){ d.remove(); });
     d.addEventListener("click", function(e){ if (e.target === d) d.close(); });
